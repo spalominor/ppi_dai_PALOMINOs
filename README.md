@@ -82,7 +82,7 @@ Las empresas de transporte enfrentan una presión constante para mejorar la efic
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/spalominor)
 [![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-FE7A16?style=for-the-badge&logo=stack-overflow&logoColor=white)](https://stackoverflow.com/users/23651826/spalominor)
 
-## Hecho con
+## Hecho con 🤝
 Este documento fue hecho con la ayuda de:
 [![ChatGPT](https://img.shields.io/badge/ChatGPT-Informational?style=flat&logo=openai&logoColor=white)](https://openai.com/chatgpt)
 [![Gemini](https://img.shields.io/badge/Gemini-Informational?style=flat&logo=google&logoColor=white)](https://gemini.google.com/app)
