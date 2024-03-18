@@ -85,6 +85,6 @@ Las empresas de transporte enfrentan una presión constante para mejorar la efic
 ## Hecho con
 Este documento fue hecho con la ayuda de:
 [![ChatGPT](https://img.shields.io/badge/ChatGPT-Informational?style=flat&logo=openai&logoColor=white)](https://openai.com/chatgpt)
-[![Gamini](https://img.shields.io/badge/Gamini-Informational?style=flat&logo=opensourceinitiative&logoColor=white)](https://gamini.design/)
+[![Gemini](https://img.shields.io/badge/Gemini-Informational?style=flat&logo=google&logoColor=white)](https://gemini.google.com/app)
 [![Shields.io](https://img.shields.io/badge/Shields.io-Informational?style=flat&logo=javascript&logoColor=white)](https://shields.io/)
 
