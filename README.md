@@ -1,5 +1,7 @@
 # Flutas 🍇: Gestor de Flotas y Rutas Vehículares
 
+![GitHub commit activity](https://img.shields.io/github/commit-activity/:w/:spalominor/:ppi_dai_PALOMINOs)
+
 ## Contenido
 - [Descripción del Proyecto 📖](#descripción-del-proyecto-)
 - [Objetivos 🎯](#Objetivos-)
