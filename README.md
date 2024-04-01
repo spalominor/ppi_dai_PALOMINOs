@@ -14,12 +14,6 @@ Este proyecto busca ofrecer una solución para el manejo eficiente y efectivo de
 
 ## Objetivos 🎯
 
-### Mejora de la eficiencia operativa y reducción de costos:
-
-- **Seguimiento en tiempo real:** Utilizaremos Numpy y SciPy para optimizar los vehículos en función de las condiciones del tráfico, el rendimiento, el coste y las necesidades de los clientes.
-  
-- **Análisis de datos:** Emplearemos NumPy y Pandas para evaluar el rendimiento de los vehículos y la eficiencia de combustible, identificando áreas de mejora y optimizando el uso de recursos.
-
 ### Mantenimiento predictivo para prevenir averías y reducir tiempos de inactividad:
 
 - **Modelos predictivos:** Implementaremos algoritmos de mantenimiento predictivo utilizando Scipy para analizar datos de mantenimiento y predecir posibles fallas antes de que ocurran.
@@ -34,7 +28,7 @@ Este proyecto busca ofrecer una solución para el manejo eficiente y efectivo de
 
 ### Diferenciación tecnológica y adaptabilidad a las necesidades del cliente:
 
-- **Tecnologías avanzadas:** Utilizaremos herramientas como NumPy, Pandas, Matplotlib y Geopandas para ofrecer una solución tecnológica avanzada.
+- **Tecnologías avanzadas:** Utilizaremos herramientas como NumPy, Pandas, SciPy, Matplotlib y Geopandas para ofrecer una solución tecnológica avanzada.
   
 - **Escalabilidad y flexibilidad:** Diseñaremos la plataforma de manera que sea escalable y adaptable para satisfacer las necesidades de diferentes tipos y tamaños de empresas de transporte, permitiendo personalización según los requisitos específicos de cada cliente.
 
