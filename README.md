@@ -1,12 +1,12 @@
 # Flutas 🍇: Gestor de Flotas y Rutas Vehículares
 
 ## Contenido
-- [Descripción del Proyecto 📖](#descripción-del-proyecto-📖)
-- [Objetivos 🎯](#Objetivos-🎯)
-- [Justificación de la Idea 💡](#justificación-de-la-idea-💡)
-- [Librerías Utilizadas 📚](#librerías-utilizadas-📚)
-- [Información Profesional 👨‍🎓](#información-profesional-👨‍🎓)
-- [Contacto 📲](#contacto-📲)
+- [Descripción del Proyecto 📖](#descripción-del-proyecto-)
+- [Objetivos 🎯](#Objetivos-)
+- [Justificación de la Idea 💡](#justificación-de-la-idea-)
+- [Librerías Utilizadas 📚](#librerías-utilizadas-)
+- [Información Profesional 👨‍🎓](#información-profesional-)
+- [Contacto 📲](#contacto-)
 
 ## Descripción del Proyecto 📖
 
