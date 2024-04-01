@@ -1,12 +1,12 @@
 # Flutas 🍇: Gestor de Flotas y Rutas Vehículares
 
 ## Contenido
-- [Descripción del Proyecto 📖](#descripción-del-proyecto)
-- [Objetivos 🎯](#objetivos)
-- [Justificación de la Idea 💡](#justificación-de-la-idea)
-- [Librerías Utilizadas 📚](#librerías-utilizadas)
-- [Información Profesional 👨‍🎓](#información-profesional)
-- [Contacto 📲](#contacto)
+- [Descripción del Proyecto 📖](#descripción-del-proyecto-📖)
+- [Objetivos 🎯](#Objetivos-🎯)
+- [Justificación de la Idea 💡](#justificación-de-la-idea-💡)
+- [Librerías Utilizadas 📚](#librerías-utilizadas-📚)
+- [Información Profesional 👨‍🎓](#información-profesional-👨‍🎓)
+- [Contacto 📲](#contacto-📲)
 
 ## Descripción del Proyecto 📖
 
@@ -36,7 +36,7 @@ Este proyecto busca ofrecer una solución para el manejo eficiente y efectivo de
 
 Las empresas de transporte enfrentan una presión constante para mejorar la eficiencia operativa y reducir los costos asociados con la gestión de flotas. La optimización de rutas, el mantenimiento preventivo y la gestión de combustible son aspectos críticos que impactan directamente en la rentabilidad de las empresas y a la calidad del servicio que ofrecen.
 
-## Librerías Utilizadas
+## Librerías Utilizadas 📚
 
 1. **NumPy**:  
    <img src="https://numpy.org/images/logo.svg" width="100"/>
