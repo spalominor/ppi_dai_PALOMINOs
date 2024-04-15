@@ -1,6 +1,6 @@
 import streamlit as st
 from informacion import vehiculos, pedidos
-from asignacion_optima_pedidos import asignar_vehiculo_a_pedido
+from utils.asignacion_optima_pedidos import asignar_vehiculo_a_pedido
 
 def main():
     st.title("Asignación Óptima de Vehículos a Pedidos")

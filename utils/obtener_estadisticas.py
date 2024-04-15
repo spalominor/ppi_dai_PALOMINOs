@@ -138,6 +138,7 @@ def mostrar_estadisticas_estado_vehiculos():
     ):
         st.write(f"- Año {ano_vehiculo}: {frecuencia_ano} vehículos	")
 
+    # Sección 1:
     # Estadísticas de kilometraje
     st.subheader("Estadísticas de Kilometraje")
 
@@ -299,6 +300,7 @@ def mostrar_estadisticas_pedidos():
     # Mostrar la mediana de pedidos por día de la semana
     st.write(f"Mediana de Pedidos por Día de la Semana: {mediana_dia_semana}")
 
+    #Sección 2:
     # Mostrar la frecuencia de pedidos por hora del día
     st.subheader("Frecuencia de Pedidos por Hora:")
 

@@ -5,7 +5,7 @@ import informacion
 
 def actualizar_kilometraje(form_df, df_vehiculos):
     """
-    Actualiza el kilometraje del vehículo en la base de datos.
+    Actualiza el kilometraje del vehículo en el dataframe de los vehiculos.
     """
     vehiculo = form_df['vehiculo'].iloc[0]
     kilometraje = form_df['kilometraje'].iloc[0]
@@ -16,7 +16,7 @@ def actualizar_kilometraje(form_df, df_vehiculos):
 
 def actualizar_rendimiento(form_df, df_vehiculos):
     """"
-    Actualizar el rendimiento del vehículo en la base de datos.
+    Actualizar el rendimiento del vehículo en el dataframe de los vehiculos.
     """
     vehiculo = form_df['vehiculo'].iloc[0]
     gasolina = form_df['galones_gasolina'].iloc[0]
