@@ -64,7 +64,8 @@ def mostrar_estadisticas_rendimiento_combustible():
     # Calcular la desviación estándar del rendimiento
     rendimiento_desviacion_estandar = round(np.std(rendimiento_np), 2)
     st.write(
-        f"- Desviación estándar del rendimiento: {rendimiento_desviacion_estandar} km/gal"
+        f"""- Desviación estándar del
+        rendimiento: {rendimiento_desviacion_estandar} km/gal"""
     )
 
 
@@ -75,18 +76,20 @@ def mostrar_estadisticas_autonomia_vehiculos():
     # Encabezado principal
     st.header("Estadísticas de Autonomía de los Vehículos")
 
-    # Calcular la autonomía de cada vehículo multiplicando la capacidad del tanque por el rendimiento
-    autonomia_np = df_vehiculos["capacidad"].to_numpy(dtype="float") * df_vehiculos[
-        "rendimiento"
-    ].to_numpy(dtype="float")
+    # Calcular la autonomía de cada vehículo multiplicando la capacidad del
+    # tanque por el rendimiento
+    autonomia_np = df_vehiculos["capacidad"].to_numpy(
+        dtype="float") * df_vehiculos["rendimiento"].to_numpy(dtype="float")
 
     # Indicar la unidad de medida y explicar qué es la autonomía
     st.write("Autonomía medida en kilómetros (km)")
     st.write(
-        "Distancia máxima aproximada que puede recorrer un vehículo con un tanque de combustible lleno."
+        """Distancia máxima aproximada que puede recorrer un
+        vehículo con un tanque de combustible lleno."""
     )
     st.write(
-        "La autonomía se calcula multiplicando la capacidad del tanque de combustible por el rendimiento del vehículo."
+        """La autonomía se calcula multiplicando la capacidad del tanque de
+        combustible por el rendimiento del vehículo."""
     )
 
     # Calcular y mostrar la autonomía mínima
@@ -117,12 +120,15 @@ def mostrar_estadisticas_autonomia_vehiculos():
 
     # Calcular y mostrar la desviación estándar de la autonomía
     autonomia_desviacion_estandar = round(np.std(autonomia_np), 2)
-    st.write(f"- Autonomía desviación estándar: {autonomia_desviacion_estandar} km.")
+    st.write(
+        f"""- Autonomía desviación
+        estándar: {autonomia_desviacion_estandar} km.""")
 
 
 def mostrar_estadisticas_estado_vehiculos():
     """
-    Mostrar estadísticas del estado de los vehículos, incluyendo número de vehículos por año, kilometraje y kilómetros recorridos por año.
+    Mostrar estadísticas del estado de los vehículos, incluyendo
+    número de vehículos por año, kilometraje y kilómetros recorridos por año.
     """
     # Encabezado principal
     st.header("Estadísticas del Estado de los Vehículos")
@@ -176,9 +182,11 @@ def mostrar_estadisticas_estado_vehiculos():
     st.write(f"Mediana del Kilometraje: {kilometraje_mediana} km")
 
     # Calcular la desviación estándar del kilometraje
-    kilometraje_desviacion_estandar = round(np.std(kilometraje_vehiculos_np), 2)
+    kilometraje_desviacion_estandar = round(
+        np.std(kilometraje_vehiculos_np), 2)
     st.write(
-        f"Desviación Estándar del Kilometraje: {kilometraje_desviacion_estandar} km"
+        f"""Desviación Estándar del
+        Kilometraje: {kilometraje_desviacion_estandar} km"""
     )
 
     # Sección 2:
@@ -211,18 +219,25 @@ def mostrar_estadisticas_estado_vehiculos():
 
     # Calcular la estadística del promedio de kilómetros recorridos por año
     kilometros_ano_promedio = round(np.mean(kilometros_ano_vehiculos_np), 2)
-    st.write(f"Promedio de Kilómetros Recorridos por Año: {kilometros_ano_promedio} km")
+    st.write(
+        f"""Promedio de Kilómetros Recorridos por
+        Año: {kilometros_ano_promedio} km""")
 
     # Calcular la mediana de los kilómetros recorridos por año
     kilometros_ano_mediana = round(np.median(kilometros_ano_vehiculos_np), 2)
     st.write(
-        f"Mediana de los Kilómetros Recorridos por Año: {kilometros_ano_mediana} km"
+        f"""Mediana de los Kilómetros Recorridos por
+        Año: {kilometros_ano_mediana} km"""
     )
 
     # Calcular la desviación estándar de los kilómetros recorridos por año
-    kilometros_ano_desviacion_estandar = round(np.std(kilometros_ano_vehiculos_np))
+    kilometros_ano_desviacion_estandar = round(
+        np.std(kilometros_ano_vehiculos_np))
     st.write(
-        f"Desviación Estándar de los Kilómetros Recorridos por Año: {kilometros_ano_desviacion_estandar} km"
+        f"""
+        Desviación Estándar de los Kilómetros
+        Recorridos por Año: {kilometros_ano_desviacion_estandar} km
+        """
     )
 
 
@@ -231,8 +246,10 @@ def mostrar_estadisticas_pedidos():
     Mostrar las estadísticas de los pedidos.
 
     Args:
-    - df_pedidos (pd.DataFrame): DataFrame que contiene los datos de los pedidos.
-    - dias_en_espanol (dict): Diccionario que mapea nombres de días en inglés a español.
+    - df_pedidos (pd.DataFrame): DataFrame que contiene los
+    datos de los pedidos.
+    - dias_en_espanol (dict): Diccionario que mapea nombres
+    de días en inglés a español.
 
     Returns:
     None
@@ -247,7 +264,8 @@ def mostrar_estadisticas_pedidos():
     st.subheader("Frecuencia de Pedidos por Día de la Semana:")
 
     # Obtener el nombre del día de la semana para cada pedido
-    dia_semana_pedido_np = pd.to_datetime(df_fecha_hora[0]).dt.day_name().to_numpy()
+    dia_semana_pedido_np = pd.to_datetime(
+        df_fecha_hora[0]).dt.day_name().to_numpy()
 
     # Calcular la frecuencia de pedidos para cada día de la semana
     dia_semana, frecuencia_dia_semana = np.unique(
@@ -280,7 +298,8 @@ def mostrar_estadisticas_pedidos():
 
     # Calcular la mediana de los datos de pedidos según el día de la semana
 
-    # Crear una lista con todos los días de la semana ordenados según la frecuencia de pedidos
+    # Crear una lista con todos los días de la semana ordenados según la
+    # frecuencia de pedidos
     pedidos_por_dia_semana_ordenado = []
     for dia, frecuencia in dia_frecuencia_ordenado:
         for i in range(frecuencia):
@@ -289,7 +308,8 @@ def mostrar_estadisticas_pedidos():
     # Calcular la cantidad total de pedidos
     cantidad_pedidos = len(df_pedidos["fecha"])
 
-    # Calcular la ubicación de la mediana dependiendo de si la cantidad de pedidos es par o impar
+    # Calcular la ubicación de la mediana dependiendo de si la cantidad de
+    # pedidos es par o impar
     if cantidad_pedidos % 2 == 0:
         ubicacion_mediana = cantidad_pedidos // 2
         mediana_dia_semana = pedidos_por_dia_semana_ordenado[ubicacion_mediana]
@@ -300,7 +320,7 @@ def mostrar_estadisticas_pedidos():
     # Mostrar la mediana de pedidos por día de la semana
     st.write(f"Mediana de Pedidos por Día de la Semana: {mediana_dia_semana}")
 
-    #Sección 2:
+    # Sección 2:
     # Mostrar la frecuencia de pedidos por hora del día
     st.subheader("Frecuencia de Pedidos por Hora:")
 
@@ -311,10 +331,12 @@ def mostrar_estadisticas_pedidos():
     df_rango_hora = np.append(df_rango_hora, 24)
 
     # Obtener la hora de cada pedido
-    hora_pedido_np = pd.Series(pd.to_datetime(df_fecha_hora[1])).dt.hour.to_numpy()
+    hora_pedido_np = pd.Series(pd.to_datetime(
+        df_fecha_hora[1])).dt.hour.to_numpy()
 
     # Calcular el histograma de frecuencia de pedidos por hora
-    hora_pedido_histograma_np = np.histogram(hora_pedido_np, bins=df_rango_hora)
+    hora_pedido_histograma_np = np.histogram(
+        hora_pedido_np, bins=df_rango_hora)
 
     # Mostrar la frecuencia de pedidos por hora
     for frecuencia, rango_hora in zip(
@@ -332,10 +354,10 @@ def mostrar_estadisticas_pedidos():
     ) - df_temporal_fechas[3].astype("datetime64[s]")
     prom = np.mean(df_temporal_fechas[4].dt.total_seconds())
     hora_promedio_segundos_np = np.array(prom).astype("datetime64[s]")
-    hora_promedio_np = str(hora_promedio_segundos_np.astype("datetime64[s]")).split(
-        "T"
-    )[1]
-    st.write(f"Hora promedio en la que se hacen los pedidos: {hora_promedio_np}")
+    hora_promedio_np = str(hora_promedio_segundos_np.astype(
+        "datetime64[s]")).split("T")[1]
+    st.write(
+        f"Hora promedio en la que se hacen los pedidos: {hora_promedio_np}")
 
 
 def mostrar_explicacion_estadisticas():
@@ -352,12 +374,9 @@ def mostrar_explicacion_estadisticas():
     st.header("Explicación de las Estadísticas")
 
     # Mostrar la explicación de las estadísticas
-    st.write(
-        "Estas estadísticas son generadas a partir de los datos en la aplicación."
-    )
     st.write("""
-        Las estadísticas incluyen información sobre el 
-        rendimiento de combustible, la autonomía de los 
+        Las estadísticas incluyen información sobre el
+        rendimiento de combustible, la autonomía de los
         vehículos, los pedidos y el estado de los vehículos.
     """)
 
@@ -365,8 +384,8 @@ def mostrar_explicacion_estadisticas():
 
     st.write("- Frecuencia")
     st.write("""
-        Indica la cantidad de veces que ocurre un evento 
-        dentro de un conjunto de datos. Por ejemplo, la 
+        Indica la cantidad de veces que ocurre un evento
+        dentro de un conjunto de datos. Por ejemplo, la
         frecuencia de pedidos por día de la semana indica
         cuántos pedidos se realizan en cada día de la semana.
     """)
@@ -385,7 +404,7 @@ def mostrar_explicacion_estadisticas():
     st.write("""
         Es el valor que se encuentra en el medio de un conjunto
         de datos cuando estos están ordenados de menor a mayor.
-        Es una medida de la tendencia central que no se ve 
+        Es una medida de la tendencia central que no se ve
         afectada por valores extremos. Por ejemplo, la mediana
         del kilometraje de los vehículos indica el valor que se
         encuentra en el medio de todos los valores de kilometraje.
@@ -400,7 +419,7 @@ def mostrar_explicacion_estadisticas():
 
     st.write("- Valor máximo")
     st.write("""
-        Es el valor más grande dentro de un conjunto de datos. 
+        Es el valor más grande dentro de un conjunto de datos.
         Por ejemplo, el valor máximo del rendimiento de combustible
         indica el rendimiento más alto entre todos los vehículos.
     """)
@@ -409,19 +428,19 @@ def mostrar_explicacion_estadisticas():
     st.write("""
         Es una medida de dispersión que indica cuánto varían los
         valores de un conjunto de datos alrededor del promedio. Una
-        desviación estándar baja indica que los valores están cerca 
-        del promedio, mientras que una desviación estándar alta 
-        indica que los valores están más dispersos. Por ejemplo, 
+        desviación estándar baja indica que los valores están cerca
+        del promedio, mientras que una desviación estándar alta
+        indica que los valores están más dispersos. Por ejemplo,
         una baja desviación estándar en el rendimiento de combustible
-        indica que la mayoría de los vehículos tienen un rendimiento 
-        similar, mientras que una alta desviación estándar indica que 
-        hay una variabilidad significativa en el rendimiento entre 
+        indica que la mayoría de los vehículos tienen un rendimiento
+        similar, mientras que una alta desviación estándar indica que
+        hay una variabilidad significativa en el rendimiento entre
         los vehículos.
     """)
 
     st.subheader("¿Entiendes más con gráficos?")
     st.write("""
-        Visita la pestaña de 'Gráficos' para ver visualizaciones 
+        Visita la pestaña de 'Gráficos' para ver visualizaciones
         de las estadísticas.
     """)
 
@@ -449,4 +468,3 @@ elif tema_seleccionado == "Estado de Vehículos":
     mostrar_estadisticas_estado_vehiculos()
 elif tema_seleccionado == "¿Qué son estas estadísticas?":
     mostrar_explicacion_estadisticas()
-    

@@ -10,7 +10,8 @@ def actualizar_kilometraje(form_df, df_vehiculos):
     vehiculo = form_df['vehiculo'].iloc[0]
     kilometraje = form_df['kilometraje'].iloc[0]
     # Actualizar el kilometraje del vehículo
-    df_vehiculos.loc[df_vehiculos['placa'] == vehiculo, 'kilometraje'] = kilometraje
+    df_vehiculos.loc[df_vehiculos['placa'] ==
+                     vehiculo, 'kilometraje'] = kilometraje
     return df_vehiculos
 
 
@@ -22,13 +23,16 @@ def actualizar_rendimiento(form_df, df_vehiculos):
     gasolina = form_df['galones_gasolina'].iloc[0]
     kilometraje = form_df['kilometraje'].iloc[0]
     # Obtener el kilometraje actual del vehículo
-    kilometraje_actual = df_vehiculos.loc[df_vehiculos['placa'] == vehiculo, 'kilometraje'].iloc[0]
+    kilometraje_actual = df_vehiculos.loc[df_vehiculos['placa']
+                                          == vehiculo, 'kilometraje'].iloc[0]
     rendimiento = (kilometraje - kilometraje_actual) / gasolina
     # Obtener el rendimiento actual del vehículo
-    rendimiento_actual = df_vehiculos.loc[df_vehiculos['placa'] == vehiculo, 'rendimiento'].iloc[0]
+    rendimiento_actual = df_vehiculos.loc[df_vehiculos['placa']
+                                          == vehiculo, 'rendimiento'].iloc[0]
     if rendimiento == 0:
         return df_vehiculos
-    df_vehiculos.loc[df_vehiculos['placa'] == vehiculo, 'rendimiento'] = (float(rendimiento_actual) + rendimiento) / 2
+    df_vehiculos.loc[df_vehiculos['placa'] == vehiculo, 'rendimiento'] = (
+        float(rendimiento_actual) + rendimiento) / 2
     return df_vehiculos
 
 
@@ -51,10 +55,14 @@ def main():
     }
 
     with st.form('Registro'):
-        form_data["conductor"] = st.selectbox('Selecciona el conductor:', conductores)
-        form_data["vehiculo"] = st.selectbox('Selecciona el vehículo:', vehiculos)
-        form_data["galones_gasolina"] = st.number_input('Galones de gasolina:', min_value=0.0, step=0.1, format="%.3f")
-        form_data["kilometraje"] = st.number_input('Kilometraje del vehículo:', min_value=0, step=100)
+        form_data["conductor"] = st.selectbox(
+            'Selecciona el conductor:', conductores)
+        form_data["vehiculo"] = st.selectbox(
+            'Selecciona el vehículo:', vehiculos)
+        form_data["galones_gasolina"] = st.number_input(
+            'Galones de gasolina:', min_value=0.0, step=0.1, format="%.3f")
+        form_data["kilometraje"] = st.number_input(
+            'Kilometraje del vehículo:', min_value=0, step=100)
         form_data["fecha"] = st.date_input('Fecha de la acción')
 
         submitted = st.form_submit_button('Registrar')
@@ -62,7 +70,8 @@ def main():
     if submitted:
         form_data['hora'] = pd.Timestamp.now().strftime('%H:%M:%S')
         form_df = pd.DataFrame([form_data])  # No es necesario usar values
-        informacion.actualizar_informacion('acciones_conductor_combustible', form_df)
+        informacion.actualizar_informacion(
+            'acciones_conductor_combustible', form_df)
         df_vehiculos = actualizar_rendimiento(form_df, df_vehiculos)
         df_vehiculos = actualizar_kilometraje(form_df, df_vehiculos)
         informacion.editar_informacion('vehiculos', df_vehiculos)
