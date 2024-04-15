@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
-import data as data
+import informacion
 
 def main():
-    df_conductores = data.conductores()
-    df_vehiculos = data.vehiculos()
+    df_conductores = informacion.conductores()
+    df_vehiculos = informacion.vehiculos()
     
     st.title('Registro de Pedido Completado por Conductor')
 
@@ -39,7 +39,7 @@ def main():
         # Crear un DataFrame con los datos del formulario
         form_df = pd.DataFrame([form_data.values()], columns=form_data.keys())
         # Actualizar la información en la base de datos
-        data.actualizar_informacion('acciones_conductor_pedidos', form_df)
+        informacion.actualizar_informacion('acciones_conductor_pedidos', form_df)
         st.success('¡Pedido completado registrado exitosamente!')
 
 if __name__ == '__main__':

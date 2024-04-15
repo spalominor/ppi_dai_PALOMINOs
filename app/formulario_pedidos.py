@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import data
+import informacion
 import time
 
 def main():
@@ -32,7 +32,7 @@ def main():
         # Crear un DataFrame con los datos del formulario
         form_df = pd.DataFrame([form_data.values()], columns=form_data.keys())
         # Actualizar la información en la base de datos
-        data.actualizar_informacion('pedidos', form_df)
+        informacion.actualizar_informacion('pedidos', form_df)
         # Mostrar mensaje de éxito
         success_message = st.empty()
         success_message.success('¡Pedido registrado exitosamente!')

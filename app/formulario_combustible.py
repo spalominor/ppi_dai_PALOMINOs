@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import data as data
+import informacion
 
 
 def actualizar_kilometraje(form_df, df_vehiculos):
@@ -33,8 +33,8 @@ def actualizar_rendimiento(form_df, df_vehiculos):
 
 
 def main():
-    df_conductores = data.conductores()
-    df_vehiculos = data.vehiculos()
+    df_conductores = informacion.conductores()
+    df_vehiculos = informacion.vehiculos()
 
     st.title('Registro de Información de Conductor')
 
@@ -62,10 +62,10 @@ def main():
     if submitted:
         form_data['hora'] = pd.Timestamp.now().strftime('%H:%M:%S')
         form_df = pd.DataFrame([form_data])  # No es necesario usar values
-        data.actualizar_informacion('acciones_conductor_combustible', form_df)
+        informacion.actualizar_informacion('acciones_conductor_combustible', form_df)
         df_vehiculos = actualizar_rendimiento(form_df, df_vehiculos)
         df_vehiculos = actualizar_kilometraje(form_df, df_vehiculos)
-        data.editar_informacion('vehiculos', df_vehiculos)
+        informacion.editar_informacion('vehiculos', df_vehiculos)
         st.success('¡Información registrada exitosamente!')
 
 

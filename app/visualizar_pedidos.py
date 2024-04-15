@@ -1,5 +1,5 @@
 import streamlit as st
-import data as data
+import informacion
 
 def main():
     """
@@ -8,7 +8,7 @@ def main():
     st.title('Visualización de Pedidos')
 
     # Cargar datos de los pedidos
-    df_pedidos = data.pedidos()
+    df_pedidos = informacion.pedidos()
     opciones_estado = ['Todos', 'Pendiente', 'En camino', 'Entregado']
     
     # Filtrar y ordenar los pedidos si es necesario
