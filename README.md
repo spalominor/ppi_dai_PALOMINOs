@@ -12,7 +12,7 @@
 
 ## Descripción del Proyecto 📖
 
-Este proyecto busca ofrecer una solución para el manejo eficiente y efectivo de flotas de vehículos sin importar el tamaño, combinando análisis de datos, modelado predictivo y tecnologías de geolocalización, el gestor de flotas de vehículos está diseñado para ser una solución integral e intuitiva que aborda necesidades específicas de la industria del transporte, permitiendo a las empresas diferenciarse de la competencia.
+Este proyecto busca ofrecer una solución para el manejo eficiente y efectivo de flotas de vehículos sin importar el tamaño, combinando análisis de datos, modelado predictivo y tecnologías de geocodificación, el gestor de flotas de vehículos está diseñado para ser una solución integral e intuitiva que aborda necesidades específicas de la industria del transporte, permitiendo a las empresas diferenciarse de la competencia.
 
 ## Objetivos 🎯
 
