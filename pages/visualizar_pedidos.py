@@ -1,6 +1,5 @@
 import streamlit as st
 import informacion
-from . login import username
 
 def main():
     """
