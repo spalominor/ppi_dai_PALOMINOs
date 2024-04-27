@@ -7,18 +7,7 @@ direccion_actual = os.path.dirname(os.path.abspath(__file__))
 
 def vehiculos():
     ruta_archivo = os.path.join(direccion_actual, 'bdd', 'vehiculos.csv')
-    return pd.read_csv(
-        ruta_archivo,
-        names=[
-            'id',
-            'placa',
-            'tipo',
-            'modelo',
-            'año',
-            'capacidad',
-            'kilometraje',
-            'combustible',
-            'rendimiento'])
+    return pd.read_csv(ruta_archivo)
 
 
 def conductores():

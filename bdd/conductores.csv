@@ -1,10 +1,11 @@
-Juan Pérez,ABC123
-María García,EDF456
-Luis Martínez,XYZ12W
-Ana Rodríguez,GHI789
-Carlos Gómez,JKL012
-Sofía López,MNO345
-Daniel Ramírez,PQR678
-Andrea Sánchez,STU901
-Marta Díaz,VWX234
-Pedro Martín,YZA567
+nombre,vehiculo,descripcion,propietario
+Juan Pérez,ABC123,conductor ficticio,demo123
+María García,EDF456,conductor ficticio,demo123
+Luis Martínez,XYZ12W,conductor ficticio,demo123
+Ana Rodríguez,GHI789,conductor ficticio,demo123
+Carlos Gómez,JKL012,conductor ficticio,demo123
+Sofía López,MNO345,conductor ficticio,demo123
+Daniel Ramírez,PQR678,conductor ficticio,demo123
+Andrea Sánchez,STU901,conductor ficticio,demo123
+Marta Díaz,VWX234,conductor ficticio,demo123
+Pedro Martín,YZA567,conductor ficticio,demo123
