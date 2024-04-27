@@ -12,19 +12,26 @@ df_vehiculos = vehiculos()
 df_pedidos = pedidos()
 
 
-def graficar_barras_rendimiento_combustible():
+def graficar_barras_rendimiento_combustible(df_vehiculos):
     """
-    Mostrar las estadísticas de rendimiento de combustible.
+    Graficar un gráfico de barras con los datos de rendimiento de combustible.
+    
+    Args:
+        df_vehiculos (DataFrame): DataFrame con los datos de los vehículos
+        
+    Returns:
+        fig (Figure): Figura con el gráfico de barras
     """
-    # Encabezado principal
-
-    # Indicar la unidad de medida del rendimiento
-
     # Obtener el rendimiento de combustible de todos los vehículos
     rendimiento_np = df_vehiculos["rendimiento"].to_numpy(dtype="float")
+    
+    # Obtener las placas de los vehículos
     vehiculos_np = df_vehiculos["placa"].to_numpy(dtype="str")
 
+    # Calcular el índice del vehículo con menor rendimiento
     indice_min = np.argmin(rendimiento_np)
+    
+    # Calcular el índice del vehículo con mayor rendimiento
     indice_max = np.argmax(rendimiento_np)
 
     # Calcular el rendimiento promedio
@@ -33,34 +40,53 @@ def graficar_barras_rendimiento_combustible():
     # Calcular la mediana del rendimiento
     rendimiento_mediana = round(np.median(rendimiento_np), 2)
 
-    # Calcular la desviación estándar del rendimiento
-
     # Plotting
+    # Crear una figura nueva
     fig = plt.figure(figsize=(10, 6))
+    
+    # Crear un gráfico de barras
     plt.bar(
         vehiculos_np,
         rendimiento_np,
         color='skyblue',
         edgecolor='black',
         alpha=0.7)
+    
+    # Añadir línea horizontal para la media
     plt.axhline(
         rendimiento_promedio,
         color='red',
         linestyle='dashed',
         linewidth=1,
         label='Media')
+    
+    # Añadir línea horizontal para la mediana
     plt.axhline(
         rendimiento_mediana,
         color='green',
         linestyle='dashed',
         linewidth=1,
         label='Mediana')
+    
+    # Establecer el título
     plt.title('Distribución de Rendimiento de Combustible')
+    
+    # Establecer las etiquetas del eje x
     plt.xlabel('Vehículo (placa)')
+    
+    # Establecer las etiquetas del eje y
     plt.ylabel('Rendimiento (km/gal)')
+    
+    # Establecer las marcas del eje x
     plt.xticks(rotation=45, ha='right')
+    
+    # Mostrar la leyenda
     plt.legend()
+    
+    # Mostrar la cuadrícula
     plt.grid(True)
+    
+    # Añaadir anotaciones para el menor rendimiento
     plt.annotate(f'Menor: {min(rendimiento_np)} km/gal',
                  xy=(indice_min,
                      min(rendimiento_np)),
@@ -68,6 +94,8 @@ def graficar_barras_rendimiento_combustible():
                          min(rendimiento_np) + 3),
                  arrowprops=dict(facecolor='red',
                                  shrink=0.05))
+    
+    # Añadir anotaciones para el mayor rendimiento
     plt.annotate(f'Mayor: {max(rendimiento_np)} km/gal',
                  xy=(indice_max,
                      max(rendimiento_np)),
@@ -75,110 +103,169 @@ def graficar_barras_rendimiento_combustible():
                          max(rendimiento_np) + 3),
                  arrowprops=dict(facecolor='green',
                                  shrink=0.05))
+    
+    # Establecer los límites de los ejes
     plt.ylim(min(rendimiento_np) - 10, max(rendimiento_np) + 20)
+    
+    # Retornar la figura
     return fig
 
 
-def graficar_boxplot_rendimiento_combustible():
+def graficar_boxplot_rendimiento_combustible(df_vehiculos):
     """
     Graficar un boxplot con los datos de rendimiento de combustible.
+    
+    Args:
+        df_vehiculos (DataFrame): DataFrame con los datos de los vehículos
+        
+    Returns:
+        fig (Figure): Figura con el boxplot
     """
-    # Obtener datos de rendimiento de combustible
+    # Extraer la columna de rendimientos del DataFrame
     rendimientos = df_vehiculos["rendimiento"]
 
     # Plotting
+    # Crear una nueva figura con tamaño específico
     fig = plt.figure(figsize=(8, 6))
+    
+    # Crear un boxplot horizontal
     plt.boxplot(rendimientos, vert=False)
+    
+    # Establecer etiqueta del eje x
     plt.xlabel('Rendimiento (km/gal)')
+
+    # Establecer título del gráfico
     plt.title('Boxplot de Rendimiento de Combustible')
+
+    # Mostrar la cuadrícula en el gráfico
     plt.grid(True)
 
-    # Añadir anotaciones
+    # Añadir anotación para la mediana
     plt.annotate(
         'Mediana', xy=(
             rendimientos.median(), 1), xytext=(
             rendimientos.median(), 1.2), arrowprops=dict(
                 facecolor='black', arrowstyle='->'))
+    
+    # Añadir anotación para el primer cuartil
     plt.annotate(
         'Q1', xy=(
             rendimientos.quantile(0.25), 1), xytext=(
             rendimientos.quantile(0.25), 0.8), arrowprops=dict(
                 facecolor='black', arrowstyle='->'))
+    
+    # Añadir anotación para el tercer cuartil
     plt.annotate(
         'Q3', xy=(
             rendimientos.quantile(0.75), 1), xytext=(
             rendimientos.quantile(0.75), 0.8), arrowprops=dict(
                 facecolor='black', arrowstyle='->'))
+    
+    # Añadir anotación para el mínimo
     plt.annotate(
         'Min', xy=(
             rendimientos.min(), 1), xytext=(
             rendimientos.min(), 1.2), arrowprops=dict(
                 facecolor='black', arrowstyle='->'))
+    
+    # Añadir anotación para el máximo
     plt.annotate(
         'Max', xy=(
             rendimientos.max(), 1), xytext=(
             rendimientos.max(), 1.2), arrowprops=dict(
                 facecolor='black', arrowstyle='->'))
 
-    # Mostrar el gráfico en Streamlit
+    # Retornar la figura
     return fig
 
 
-def graficar_scatter_rendimiento_combustible():
+def graficar_scatter_rendimiento_combustible(df_vehiculos):
     """
-    Graficar un scatter plot con los datos de rendimiento de combustible.
+    Grafica un scatter plot con los datos de rendimiento de combustible.
+
+    Args:
+        df_vehiculos (DataFrame): DataFrame con los datos de los vehículos.
+
+    Returns:
+        fig (Figure): Figura con el scatter plot.
     """
-    # Obtener datos de rendimiento de combustible
+    # Obtener las placas de los vehículos
     vehiculos = df_vehiculos["placa"]
+    
+    # Obtener los modelos de los vehículos
     vehiculos_modelo = df_vehiculos["modelo"]
+    
+    # Obtener los rendimientos de los vehículos
     rendimientos = df_vehiculos["rendimiento"]
 
-    # Calcular la mediana y el rango intercuartílico (IQR)
+    # Calcular la mediana
     mediana = rendimientos.median()
+    
+    # Calcular el primer cuartil
     q1 = rendimientos.quantile(0.25)
+    
+    # Calcular el tercer cuartil
     q3 = rendimientos.quantile(0.75)
+    
+    # Calcular el rango intercuartílico (IQR)
     iqr = q3 - q1
 
     # Identificar valores atípicos
-    valores_atipicos = rendimientos[(
-        rendimientos < q1 - 1.5 * iqr) | (rendimientos > q3 + 1.5 * iqr)]
+    valores_atipicos = rendimientos[
+        (rendimientos < q1 - 1.5 * iqr) | (rendimientos > q3 + 1.5 * iqr)
+    ]
 
-    # Plotting
+    # Crear una figura con tamaño específico
     fig = plt.figure(figsize=(10, 6))
+    
+    # Crear el scatter plot
     plt.scatter(vehiculos, rendimientos, color='skyblue')
+    
+    # Establecer etiqueta del eje x
     plt.xlabel('Vehículo')
+    
+    # Establecer etiqueta del eje y
     plt.ylabel('Rendimiento (km/gal)')
+    
+    # Establecer título del gráfico
     plt.title('Rendimiento de Combustible por Vehículo')
+    
+    # Rotar etiquetas del eje x
     plt.xticks(rotation=45, ha='right')
+    
+    # Mostrar la cuadrícula en el gráfico
     plt.grid(True)
 
-    # Anotar la mediana
+    # Añadir línea para la mediana
     plt.axhline(mediana, color='red', linestyle='--', label='Mediana')
-    plt.annotate(f'Mediana: {mediana:.2f} km/gal',
-                 xy=(1,
-                     mediana),
-                 xytext=(2,
-                         mediana + 20),
-                 arrowprops=dict(facecolor='black',
-                                 arrowstyle='->'))
+    
+    # Anotar la mediana
+    plt.annotate(
+        f'Mediana: {mediana:.2f} km/gal',
+        xy=(1, mediana),
+        xytext=(2, mediana + 20),
+        arrowprops=dict(facecolor='black', arrowstyle='->')
+    )
 
     # Anotar valores atípicos
     for vehiculo, rendimiento in valores_atipicos.items():
         rendimiento = round(rendimiento, 0)
-        plt.annotate(f'{vehiculos_modelo[vehiculo]}: {rendimiento} km / gal',
-                     xy=(vehiculo, rendimiento),
-                     xytext=(-4, rendimiento * -0.25),
-                     textcoords='offset points',
-                     arrowprops=dict(facecolor='green', arrowstyle='->'))
+        plt.annotate(
+            f'{vehiculos_modelo[vehiculo]}: {rendimiento} km/gal',
+            xy=(vehiculo, rendimiento),
+            xytext=(-4, rendimiento * -0.25),
+            textcoords='offset points',
+            arrowprops=dict(facecolor='green', arrowstyle='->')
+        )
 
     # Mostrar leyenda
     plt.legend()
 
-    # Mostrar el gráfico en Streamlit
+    # Retornar la figura
     return fig
+# --------------------------DOCUMENTADO----------------------------------------
 
-
-def graficar_barras_autonomia_vehiculos():
+def graficar_barras_autonomia_vehiculos(df_vehiculos):
     """
     Mostrar las estadísticas de autonomía de los vehículos.
     """
