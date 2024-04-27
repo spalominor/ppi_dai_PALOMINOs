@@ -1,7 +1,7 @@
 # Importar librerias necesarias
 # Importar librerias para el manejo de Streamlit
 import streamlit as st
-from streamlit_login_auth_ui.widgets import __login__
+from login_auth.widgets import __login__
 
 # Importar dotenv para cargar las variables de entorno
 from dotenv import load_dotenv
