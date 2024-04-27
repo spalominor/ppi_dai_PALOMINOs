@@ -37,6 +37,9 @@ class __login__:
         8. hide_footer_bool : Pass True if the 'made with streamlit' footer should be hidden.
         9. lottie_url : The lottie animation you would like to use on the login page. Explore animations at - https://lottiefiles.com/featured
         """
+        # Cargar las credenciales de cookies
+        password = os.getenv("COOKIES_PASSWORD")
+        
         self.auth_token = auth_token
         self.company_name = company_name
         self.width = width
@@ -48,7 +51,7 @@ class __login__:
 
         self.cookies = EncryptedCookieManager(
         prefix="streamlit_login_ui_yummy_cookies",
-        password='9d68d6f2-4258-45c9-96eb-2d6bc74ddbb5-d8f49cab-edbb-404a-94d0-b25b1d4a564b')
+        password=password)
 
         if not self.cookies.ready():
             st.stop()   
@@ -83,8 +86,8 @@ class __login__:
         if st.session_state['LOGGED_IN'] is False:
             if st.session_state['LOGOUT_BUTTON_HIT'] is False:
                 fetched_cookies = self.cookies
-                if '__streamlit_login_signup_ui_username__' in fetched_cookies.keys():
-                    if fetched_cookies['__streamlit_login_signup_ui_username__'] != '1c9a923f-fb21-4a91-b3f3-5f18e3f01182':
+                if '__username__' in fetched_cookies.keys():
+                    if fetched_cookies['__username__'] != '1c9a923f-fb21-4a91-b3f3-5f18e3f01182':
                         st.session_state['LOGGED_IN'] = True
 
         if st.session_state['LOGGED_IN'] is False:
@@ -106,7 +109,7 @@ class __login__:
 
                     else:
                         st.session_state['LOGGED_IN'] = True
-                        self.cookies['__streamlit_login_signup_ui_username__'] = username
+                        self.cookies['__username__'] = username
                         self.cookies.save()
                         del_login.empty()
                         st.rerun()
@@ -241,7 +244,7 @@ class __login__:
                 st.session_state['LOGGED_IN'] = False
                 cookie_temp = '1c9a923f-fb21-4a91-b3f3-5f18e3f01182'
                 self.cookies[
-                    '__streamlit_login_signup_ui_username__'] = cookie_temp
+                    '__username__'] = cookie_temp
                 del_logout.empty()
                 st.rerun()
         

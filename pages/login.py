@@ -19,7 +19,7 @@ __login__obj = __login__(
     company_name="Flutas",
     width=300,
     height=400,
-    logout_button_name='Logout',
+    logout_button_name='Salir',
     hide_menu_bool=False,
     hide_footer_bool=False,
     lottie_url='https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json'
@@ -28,20 +28,16 @@ __login__obj = __login__(
 # Construir la interfaz de inicio de sesión y registrar nuevos usuarios
 LOGGED_IN = __login__obj.build_login_ui()
 
+# Obtener las cookies
+cookies = __login__obj.cookies
+
+# Obtener el nombre de usuario
+username = cookies['__username__']
+
 # Si el usuario está autenticado, mostrar la interfaz para registrar nuevos usuarios
 if LOGGED_IN:
-    st.title("Registro de nuevos usuarios")
+    st.title("Hola, bienvenido a Flutas, ¿qué deseas hacer hoy?")
 
-    # Formulario para registrar nuevos usuarios
-    new_username = st.text_input("Nombre de usuario:")
-    new_password = st.text_input("Contraseña:", type="password")
-    confirm_password = st.text_input("Confirmar contraseña:", type="password")
-
-    if st.button("Registrar"):
-        if new_password == confirm_password:
-            # Simplemente imprimir los valores de los nuevos usuarios registrados
-            st.write("Nuevo usuario registrado:")
-            st.write("Nombre de usuario:", new_username)
-            st.write("Contraseña:", new_password)
-        else:
-            st.error("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.")
+    st.subheader("Tu perfil")
+                
+    st.write("Nombre de usuario:", username)
