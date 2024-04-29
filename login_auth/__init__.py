@@ -1,1 +1,1 @@
-from streamlit_login_auth_ui.widgets import __login__
+from login_auth.widgets import __login__
