@@ -7,6 +7,9 @@ from login_auth.widgets import __login__
 from dotenv import load_dotenv
 import os
 
+# Importar la instancia del nombre de usuario que se guarda en las cookies
+from utils.usuario import username
+
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
 
@@ -28,16 +31,8 @@ __login__obj = __login__(
 # Construir la interfaz de inicio de sesión y registrar nuevos usuarios
 LOGGED_IN = __login__obj.build_login_ui()
 
-# Obtener las cookies
-cookies = __login__obj.cookies
-
-# Obtener el nombre de usuario
-username = cookies['__username__']
-
 # Si el usuario está autenticado, mostrar la interfaz para registrar nuevos usuarios
 if LOGGED_IN:
-    st.title("Hola, bienvenido a Flutas, ¿qué deseas hacer hoy?")
-
-    st.subheader("Tu perfil")
-                
-    st.write("Nombre de usuario:", username)
+    st.empty()
+    
+    st.success(f'¡Bienvenido de nuevo, {username}!')
