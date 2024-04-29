@@ -3,7 +3,7 @@ import streamlit as st
 
 
 
-def obtener_nombre_usuario(login_obj):
+def obtener_nombre_usuario():
     """
     Obtiene el nombre de usuario desde las cookies.
 
@@ -13,6 +13,8 @@ def obtener_nombre_usuario(login_obj):
     Returns:
         str: El nombre de usuario.
     """
-    if 'username' in st.session_state:
+    if st.session_state['LOGGED_IN']:
         username = st.session_state['username']
-    return username
+        return username
+    else:
+        return "No logeado"

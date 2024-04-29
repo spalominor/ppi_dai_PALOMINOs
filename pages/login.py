@@ -37,5 +37,5 @@ LOGGED_IN = __login__obj.build_login_ui()
 # Si el usuario está autenticado, mostrar un mensaje de bienvenida
 if LOGGED_IN:
     st.empty()
-    username = obtener_nombre_usuario(__login__obj)
+    username = obtener_nombre_usuario()
     st.success(f'¡Bienvenido de nuevo, {username}!')

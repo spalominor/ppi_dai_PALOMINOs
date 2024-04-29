@@ -35,7 +35,8 @@ def obtener_pedidos_por_usuario(username: str):
 
     try:
         # Consultar los pedidos asociados al nombre de usuario
-        cursor.execute("SELECT * FROM pedidos WHERE propietario = %s", (username,))
+        cursor.execute("SELECT * FROM pedidos WHERE propietario = %s", 
+                       (username,))
         pedidos = cursor.fetchall()
         return pedidos
     except psycopg2.Error as e:
@@ -61,7 +62,7 @@ def main():
     st.title('Visualización de Pedidos')
 
     # Obtener el nombre de usuario del usuario
-    username = obtener_nombre_usuario(st.session_state['username'])
+    username = obtener_nombre_usuario()
     
     # Cargar datos de los pedidos asociados al usuario
     df_pedidos = pd.DataFrame(obtener_pedidos_por_usuario(username=username),
@@ -72,10 +73,7 @@ def main():
                                        'estado', 
                                        'descripcion',
                                        'propietario'])
-    
-    # Eliminar la columna propietario, pues no se debe mostrar en la tabla
-    # del df_pedidos['propietario']
-    
+        
     # Opciones de filtrado y ordenamiento
     opciones_estado = ['Todos', 'Pendiente', 'En camino', 'Entregado']
 
@@ -106,7 +104,8 @@ def main():
             bsq_fecha = st.date_input('Buscar por fecha:', value=None)
             if bsq_fecha is not None:
                 st.write('Fecha seleccionada:', bsq_fecha)
-                df_pedidos = df_pedidos[df_pedidos['fecha'].dt.date == bsq_fecha]
+                df_pedidos = df_pedidos[
+                    df_pedidos['fecha'].dt.date == bsq_fecha]
 
             orden_columna = st.selectbox(
                 'Ordenar por Columna:', 

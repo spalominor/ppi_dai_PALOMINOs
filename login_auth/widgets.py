@@ -109,8 +109,7 @@ class __login__:
 
                     else:
                         st.session_state['LOGGED_IN'] = True
-                        if 'username' not in st.session_state:
-                            st.session_state['username'] = username
+                        st.session_state['username'] = username
                         self.cookies['__username__'] = username
                         self.cookies.save()
                         del_login.empty()
@@ -244,6 +243,7 @@ class __login__:
             if logout_click_check is True:
                 st.session_state['LOGOUT_BUTTON_HIT'] = True
                 st.session_state['LOGGED_IN'] = False
+                st.session_state['username'] = None
                 cookie_temp = '1c9a923f-fb21-4a91-b3f3-5f18e3f01182'
                 self.cookies[
                     '__username__'] = cookie_temp
@@ -303,6 +303,9 @@ class __login__:
 
         if 'LOGOUT_BUTTON_HIT' not in st.session_state:
             st.session_state['LOGOUT_BUTTON_HIT'] = False
+            
+        if 'username' not in st.session_state:
+            st.session_state['username'] = None
 
         auth_json_exists_bool = self.check_auth_json_file_exists(
             '_secret_auth_.json')
