@@ -1,12 +1,21 @@
+# Importamos la librería streamlit
 import streamlit as st
 
-# Librerias
-# Streamlit para la creación de la aplicación web
+
+
+# Establecer el nombre de la página
+st.set_page_config(page_title='Flutas', page_icon='🍇🛻')
 
 
 def main():
     """
     Función principal que define la vista inicial de la aplicación.
+    
+    Args:
+        None
+        
+    Returns:
+        None
     """
     # Título y descripción de la aplicación
     st.title("Gestor de Flotas de Vehículos")
@@ -31,14 +40,9 @@ def main():
         Hasta el momento, la aplicación ofrece las
         siguientes funcionalidades:
 
+        - Registro de usuarios.
         - Visualizar y filtrar pedidos.
         - Registrar nuevos pedidos.
-        - Registrar pedidos entregados.
-        - Registrar cuando un conductor va a tanquear combustible.
-        - Obtener estadísticas sobre pedidos y vehículos.
-        - Obtener gráficos sobre las estadísticas de los pedidos y vehículos.
-        - Obtener una recomendación sobre cómo asignar
-        los vehículos a los pedidos según el costo mínimo total.
         """
     )
 
@@ -48,8 +52,10 @@ def main():
         """
         - **Nombre:** Samuel Palomino Restrepo.
         - **Ubicación:** Medellín, Antioquia.
-        - **Información profesional:** Soy bachiller, actualmente estudiante del programa de Ingeniería de
-          Sistemas e Informática en la Universidad Nacional - Sede Medellín. Tengo conocimientos en
+        - **Información profesional:** Soy bachiller, actualmente estudiante 
+        del programa de Ingeniería de
+          Sistemas e Informática en la Universidad Nacional - Sede Medellín. 
+          Tengo conocimientos en
           Python, JavaScript, C# y SQL.
         """
     )

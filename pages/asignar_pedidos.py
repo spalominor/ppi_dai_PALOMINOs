@@ -4,11 +4,17 @@ from utils.asignacion_optima_pedidos import asignar_vehiculo_a_pedido
 
 
 def main():
+    """
+    Define la vista de la página de asignación óptima de vehículos a pedidos.
+    
+    Args:
+        None
+        
+    Returns:
+        None
+    """
     st.title("Asignación Óptima de Vehículos a Pedidos")
     
-    st.write("Actualmente corriendo en: ")
-    st.write("192.168.1.3:8501")
-
     df_vehiculos = vehiculos()
     df_pedidos = pedidos()
 
@@ -56,3 +62,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

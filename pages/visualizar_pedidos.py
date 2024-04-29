@@ -179,4 +179,8 @@ def main():
 
 if __name__ == '__main__':
     # Llamar a la función principal
-    main()
+    try:
+        main()
+    except Exception as e:
+        st.error('Intenta iniciando sesión')
+        print(e)

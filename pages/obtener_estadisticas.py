@@ -468,3 +468,4 @@ elif tema_seleccionado == "Estado de Vehículos":
     mostrar_estadisticas_estado_vehiculos()
 elif tema_seleccionado == "¿Qué son estas estadísticas?":
     mostrar_explicacion_estadisticas()
+
