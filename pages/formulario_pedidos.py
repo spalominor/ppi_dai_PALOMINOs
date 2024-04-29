@@ -1,7 +1,11 @@
+# Importar librerías necesarias
+# Importar librerías nativas de Python
+import time
+# Importar librerías de terceros
 import streamlit as st
 import pandas as pd
 import informacion
-import time
+
 
 
 def main():

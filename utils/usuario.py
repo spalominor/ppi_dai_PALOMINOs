@@ -1,12 +1,18 @@
-# Importar el objeto login de la página de login
-from pages.login import __login__obj
+# Importar librerías necesarias
+import streamlit as st
 
-# Obtener las cookies
-cookies = __login__obj.cookies
 
-# Obtener el nombre de usuario
-username = cookies['__username__']
-"""
-# Obtener el nombre del usuario desde las cookies de la sesión
-username = cookies['__username__']
-"""
+
+def obtener_nombre_usuario(login_obj):
+    """
+    Obtiene el nombre de usuario desde las cookies.
+
+    Args:
+        cookies (dict): Un diccionario con las cookies de la sesión.
+
+    Returns:
+        str: El nombre de usuario.
+    """
+    if 'username' in st.session_state:
+        username = st.session_state['username']
+    return username

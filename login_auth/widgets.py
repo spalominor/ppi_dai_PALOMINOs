@@ -17,7 +17,7 @@ from .utils import send_passwd_in_email
 from .utils import change_passwd
 from .utils import check_current_passwd
 
-
+#st.session_state
 class __login__:
     """
     Builds the UI for the Login/ Sign Up page.
@@ -109,6 +109,8 @@ class __login__:
 
                     else:
                         st.session_state['LOGGED_IN'] = True
+                        if 'username' not in st.session_state:
+                            st.session_state['username'] = username
                         self.cookies['__username__'] = username
                         self.cookies.save()
                         del_login.empty()

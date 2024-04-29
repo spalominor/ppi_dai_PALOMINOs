@@ -1,14 +1,17 @@
 # Importar librerias necesarias
+import os
+
 # Importar librerias para el manejo de Streamlit
 import streamlit as st
 from login_auth.widgets import __login__
 
 # Importar dotenv para cargar las variables de entorno
 from dotenv import load_dotenv
-import os
 
-# Importar la instancia del nombre de usuario que se guarda en las cookies
-from utils.usuario import username
+# Importar la función para obtener el nombre de usuario desde las cookies
+from utils.usuario import obtener_nombre_usuario
+
+
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
@@ -31,8 +34,8 @@ __login__obj = __login__(
 # Construir la interfaz de inicio de sesión y registrar nuevos usuarios
 LOGGED_IN = __login__obj.build_login_ui()
 
-# Si el usuario está autenticado, mostrar la interfaz para registrar nuevos usuarios
+# Si el usuario está autenticado, mostrar un mensaje de bienvenida
 if LOGGED_IN:
     st.empty()
-    
+    username = obtener_nombre_usuario(__login__obj)
     st.success(f'¡Bienvenido de nuevo, {username}!')

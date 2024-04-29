@@ -29,7 +29,7 @@ def check_usr_pass(username: str, password: str) -> bool:
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT clave FROM usuarios WHERE username = %s", 
+        cursor.execute("SELECT clave FROM usuarios WHERE usuario = %s", 
                        (username,))
         hashed_password = cursor.fetchone()
         if hashed_password and ph.verify(hashed_password[0], password):
@@ -133,13 +133,13 @@ def check_unique_usr(username_sign_up: str) -> bool:
 
     try:
         # Verificar si el nombre de usuario ya está en uso
-        cursor.execute("SELECT username FROM usuarios WHERE username = %s", 
+        cursor.execute("SELECT usuario FROM usuarios WHERE usuario = %s", 
                        (username_sign_up,))
         if cursor.fetchone():
             return False
         
         # Verificar si el nombre de usuario no está vacío
-        if not non_empty_str_check(username_sign_up):
+        if non_empty_str_check(username_sign_up) is False:
             return False
         
         return True
@@ -174,7 +174,7 @@ def register_new_usr(name: str,
     try:
         cursor.execute("""
             INSERT INTO usuarios (
-                nombre, email, username, clave) 
+                nombre, email, usuario, clave) 
             VALUES (%s, %s, %s, %s)
             """, (name, email, username, hashed_password)
             )
@@ -202,7 +202,7 @@ def check_username_exists(username: str) -> bool:
 
     try:
         cursor.execute(
-            "SELECT * FROM usuarios WHERE username = %s", (username))
+            "SELECT * FROM usuarios WHERE usuario = %s", (username))
         if cursor.fetchone():
             return True
     except psycopg2.Error as e:
@@ -231,7 +231,7 @@ def check_email_exists(email: str):
 
     try:
         cursor.execute(
-            "SELECT username FROM usuarios WHERE email = %s", (email,))
+            "SELECT usuario FROM usuarios WHERE email = %s", (email,))
         user = cursor.fetchone()
         if user:
             # Devuelve True y el nombre de usuario asociado al email
@@ -356,7 +356,7 @@ def check_current_passwd(email: str, current_passwd: str) -> bool:
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT password FROM usuarios WHERE email = %s", (email))
+        cursor.execute("SELECT clave FROM usuarios WHERE email = %s", (email))
         hashed_password = cursor.fetchone()
         if hashed_password and ph.verify(hashed_password[0], current_passwd):
             print("Contraseña actual verificada.", email)

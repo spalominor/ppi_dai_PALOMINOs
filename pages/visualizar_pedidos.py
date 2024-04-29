@@ -1,10 +1,49 @@
-# Importar las librerías necesarias
+# Importar las librerías nativas necesarias
+import os
+
+# Importar las librerías de terceros necesarias
+import dotenv
+import pandas as pd
+import psycopg2
 import streamlit as st
 
-# Importar los módulos y las funciones necesarias
-import informacion
-from utils.usuario import username
+# Importar las funciones necesarias para obtener el nombre de usuario
+from utils.usuario import obtener_nombre_usuario
 
+
+
+# Cargar las variables de entorno desde el archivo .env
+dotenv.load_dotenv()
+
+# Obtener la URL de la base de datos desde las variables de entorno
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+def obtener_pedidos_por_usuario(username: str):
+    """
+    Obtiene los pedidos asociados al nombre de usuario desde la base de datos.
+    
+    Args:
+        username (str): El nombre de usuario del usuario.
+
+    Returns:
+        list: Una lista de tuplas con los datos de los pedidos.
+    """
+    # Conectarse a la base de datos
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+
+    try:
+        # Consultar los pedidos asociados al nombre de usuario
+        cursor.execute("SELECT * FROM pedidos WHERE propietario = %s", (username,))
+        pedidos = cursor.fetchall()
+        return pedidos
+    except psycopg2.Error as e:
+        print("Error al obtener los pedidos:", e)
+        return None
+    finally:
+        cursor.close()
+        conn.close()
 
 def main():
     """
@@ -21,9 +60,22 @@ def main():
     # Establecer el título de la página
     st.title('Visualización de Pedidos')
 
-    # Cargar datos de los pedidos
-    df_pedidos = informacion.pedidos()
-
+    # Obtener el nombre de usuario del usuario
+    username = obtener_nombre_usuario(st.session_state['username'])
+    
+    # Cargar datos de los pedidos asociados al usuario
+    df_pedidos = pd.DataFrame(obtener_pedidos_por_usuario(username=username),
+                              columns=['id', 
+                                       'direccion', 
+                                       'fecha', 
+                                       'cliente', 
+                                       'estado', 
+                                       'descripcion',
+                                       'propietario'])
+    
+    # Eliminar la columna propietario, pues no se debe mostrar en la tabla
+    # del df_pedidos['propietario']
+    
     # Opciones de filtrado y ordenamiento
     opciones_estado = ['Todos', 'Pendiente', 'En camino', 'Entregado']
 
@@ -54,14 +106,12 @@ def main():
             bsq_fecha = st.date_input('Buscar por fecha:', value=None)
             if bsq_fecha is not None:
                 st.write('Fecha seleccionada:', bsq_fecha)
-                df_pedidos = df_pedidos[df_pedidos['fecha'].str.contains(
-                    str(bsq_fecha), case=False)]
+                df_pedidos = df_pedidos[df_pedidos['fecha'].dt.date == bsq_fecha]
 
             orden_columna = st.selectbox(
-                'Ordenar por Columna:',
-                ['id'] +
-                list(
-                    df_pedidos.columns))
+                'Ordenar por Columna:', 
+                list(df_pedidos.drop('propietario', axis=1).columns)
+            )
 
             # Botones de orden ascendente y descendente
             orden_ascendente = st.checkbox('Orden Ascendente', value=True)
@@ -85,13 +135,25 @@ def main():
         st.write('Tabla dinámica activada')
         
         # Definir que mostrar si el dataframe está vacío o no:
-        if df_pedidos.empty:
+        if df_pedidos is None or len(df_pedidos) == 0:
             # Mostrar mensaje de error si no hay pedidos
             st.error('No hay pedidos para mostrar')
             # Si la busqueda arroja resultados, entonces:
         elif not df_pedidos.empty:
-            # Mostrar tabla de pedidos filtrada y ordenada
-            st.write(df_pedidos)
+            # Mostrar tabla de pedidos filtrada, ordenada y con estilo
+            st.dataframe(
+                df_pedidos.drop('propietario', axis=1),
+                column_config={
+                    'id': 'ID #️⃣',
+                    'direccion': 'Dirección de entrega 🧭',
+                    'fecha': 'Fecha 🗓️',
+                    'cliente': 'Cliente 🧑',
+                    'estado': 'Estado 🚚',
+                    'descripcion': 'Descripción 📝',
+                    },
+                hide_index=True,
+                use_container_width=True
+            )
             
             # Mostrar mensaje de éxito si se cargaron los pedidos
             st.success('Pedidos cargados correctamente')
@@ -99,15 +161,17 @@ def main():
         # Mostrar tabla de pedidos sin filtrar ni ordenar
         st.write('Tabla dinámica desactivada')
         
-        # Eliminar columnas innecesarias
-        del df_pedidos['cliente']
+        if not df_pedidos.empty:
+            # Eliminar columnas innecesarias
+            df_pedidos.drop(['fecha', 'cliente', 'descripcion','propietario'], 
+                            axis=1, 
+                            inplace=True)
+            # Mostrar tabla de pedidos
+            st.dataframe(df_pedidos, hide_index=True)
+        else:
+            # Mostrar mensaje de error si no hay pedidos
+            st.error('No tienes pedidos para mostrar')
         
-        # Eliminar columna fecha
-        del df_pedidos['fecha']
-        
-        # Mostrar tabla de pedidos
-        st.write(df_pedidos)
-
     # Botón para redireccionar al formulario para crear pedidos
     if st.button('Crear pedidos'):
         # Redireccionar al formulario de pedidos
