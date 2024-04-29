@@ -1,5 +1,4 @@
 import streamlit as st
-import json
 import os
 from streamlit_lottie import st_lottie
 from streamlit_option_menu import option_menu
