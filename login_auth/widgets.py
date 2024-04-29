@@ -22,19 +22,27 @@ class __login__:
     Builds the UI for the Login/ Sign Up page.
     """
 
-    def __init__(self, auth_token: str, company_name: str, width, height, logout_button_name: str = 'Logout', hide_menu_bool: bool = False, hide_footer_bool: bool = False, lottie_url: str = "https://assets8.lottiefiles.com/packages/lf20_ktwnwv5m.json" ):
+    def __init__(self, auth_token: str, company_name: str, width, height, 
+                 logout_button_name: str = 'Logout', 
+                 hide_menu_bool: bool = False, 
+                 hide_footer_bool: bool = False, 
+                 lottie_url: str = "https://assets8.lottiefiles.com/packag" + 
+                 "es/lf20_ktwnwv5m.json" ):
         """
-        Arguments:
-        -----------
-        1. self
-        2. auth_token : The unique authorization token received from - https://www.courier.com/email-api/
-        3. company_name : This is the name of the person/ organization which will send the password reset email.
-        4. width : Width of the animation on the login page.
-        5. height : Height of the animation on the login page.
-        6. logout_button_name : The logout button name.
-        7. hide_menu_bool : Pass True if the streamlit menu should be hidden.
-        8. hide_footer_bool : Pass True if the 'made with streamlit' footer should be hidden.
-        9. lottie_url : The lottie animation you would like to use on the login page. Explore animations at - https://lottiefiles.com/featured
+        Método constructor de la clase __login__
+        
+        Args:
+            auth_token (str): El token de autenticación de la API del Email
+            company_name (str): El nombre de la empresa
+            width (int): Ancho de la interfaz
+            height (int): Alto de la interfaz
+            logout_button_name (str): Nombre del botón de logout
+            hide_menu_bool (bool): Ocultar el menú de Streamlit
+            hide_footer_bool (bool): Ocultar el footer de Streamlit
+            lottie_url (str): URL de la animación Lottie
+            
+        Returns:
+            None
         """
         # Cargar las credenciales de cookies
         password = os.getenv("COOKIES_PASSWORD")
@@ -58,7 +66,13 @@ class __login__:
 
     def login_widget(self) -> None:
         """
-        Creates the login widget, checks and sets cookies, authenticates the users.
+        Crea el widget de inicio de sesión y autentica al usuario.
+        
+        Args:
+            Self
+            
+        Returns:
+            None
         """
 
         # Checks if cookie exists.
@@ -66,9 +80,11 @@ class __login__:
             if st.session_state['LOGOUT_BUTTON_HIT'] is False:
                 fetched_cookies = self.cookies
                 if '__username__' in fetched_cookies.keys():
-                    if fetched_cookies['__username__'] != '1c9a923f-fb21-4a91-b3f3-5f18e3f01182':
+                    cookies_temp = '1c9a923f-fb21-4a91-b3f3-5f18e3f01182'
+                    if fetched_cookies['__username__'] != cookies_temp:
                         st.session_state['LOGGED_IN'] = True
-                        st.session_state['username'] = fetched_cookies['__username__']
+                        st.session_state[
+                            'username'] = fetched_cookies['__username__']
 
         if st.session_state['LOGGED_IN'] is False:
             st.session_state['LOGOUT_BUTTON_HIT'] = False
@@ -76,17 +92,21 @@ class __login__:
 
             del_login = st.empty()
             with del_login.form("Login Form"):
-                username = st.text_input("Username", placeholder = 'Your unique username')
-                password = st.text_input("Password", placeholder = 'Your password', type = 'password')
+                username = st.text_input("Usuario", 
+                                         placeholder = 'Tu nombre de usuario')
+                password = st.text_input("Contraseña", 
+                                         placeholder = 'Tu contraseña', 
+                                         type = 'password')
 
                 st.markdown("###")
                 login_submit_button = st.form_submit_button(label = 'Login')
 
                 if login_submit_button is True:
-                    authenticate_user_check = check_usr_pass(username, password)
+                    authenticate_user_check = check_usr_pass(username, 
+                                                             password)
 
                     if authenticate_user_check is False:
-                        st.error("Invalid Username or Password!")
+                        st.error("Usuario o contraseña incorrectos")
 
                     else:
                         st.session_state['LOGGED_IN'] = True
@@ -99,28 +119,51 @@ class __login__:
 
     def animation(self) -> None:
         """
-        Renders the lottie animation.
+        Crea la animación Lottie en la interfaz de usuario.
+        
+        Args:
+            Self
+        
+        Returns:
+            None
         """
+        # Cargar la animación Lottie
         lottie_json = load_lottieurl(self.lottie_url)
+        
+        # Mostrar la animación Lottie
         st_lottie(lottie_json, width = self.width, height = self.height)
 
 
     def sign_up_widget(self) -> None:
         """
-        Creates the sign-up widget and stores the user info in a secure way in the _secret_auth_.json file.
+        Crea el widget de registro y almacena la información del usuario de 
+        forma segura en la base de datos.
+        
+        Args:
+            Self
+            
+        Returns:
+            None
         """
         with st.form("Sign Up Form"):
-            name_sign_up = st.text_input("Name *", placeholder = 'Please enter your name')
+            name_sign_up = st.text_input("Nombre *", 
+                                         placeholder = 'Ingresa tu nombre')
             valid_name_check = check_valid_name(name_sign_up)
 
-            email_sign_up = st.text_input("Email *", placeholder = 'Please enter your email')
+            email_sign_up = st.text_input("Email *", 
+                                          placeholder = 'Ingresa tu email')
             valid_email_check = check_valid_email(email_sign_up)
             unique_email_check = check_unique_email(email_sign_up)
             
-            username_sign_up = st.text_input("Username *", placeholder = 'Enter a unique username')
+            mensaje_username = 'Ingresa un nombre de usuario único'
+            username_sign_up = st.text_input("Usuario *", 
+                                             placeholder = mensaje_username)
             unique_username_check = check_unique_usr(username_sign_up)
 
-            password_sign_up = st.text_input("Password *", placeholder = 'Create a strong password', type = 'password')
+            mensaje_contraseña = 'Crea una contraseña segura'
+            password_sign_up = st.text_input("Password *", 
+                                             placeholder = mensaje_contraseña, 
+                                             type = 'password')
 
             st.markdown("###")
             sign_up_submit_button = st.form_submit_button(label = 'Register')
@@ -139,7 +182,7 @@ class __login__:
                     st.error(f'Lo sentimos, {username_sign_up} ya existe')
                 
                 elif unique_username_check is None:
-                    st.error('Please enter a non - empty Username!')
+                    st.error('Ingresa un nombre de usuario')
 
                 if valid_name_check is True:
                     if valid_email_check is True:
@@ -154,14 +197,22 @@ class __login__:
 
     def forgot_password(self) -> None:
         """
-        Creates the forgot password widget and after user authentication (email), triggers an email to the user 
-        containing a random password.
+        Crea un widget para recuperar la contraseña en caso de olvido.
+        Verifica que el email ingresado por el usuario esté en la base de 
+        datos.
+        
+        Args:
+            Self
+        
+        Returns:
+            None
         """
         with st.form("Forgot Password Form"):
             mensaje_email = 'Ingresa el email registrado con nosotros'
             email_forgot_passwd = st.text_input("Email", 
                                                 placeholder=mensaje_email)
-            email_exists_check, username_forgot_passwd = check_email_exists(email_forgot_passwd)
+            email_exists_check, username_forgot_passwd = check_email_exists(
+                email_forgot_passwd)
 
             st.markdown("###")
             forgot_passwd_submit_button = st.form_submit_button(
@@ -173,7 +224,11 @@ class __login__:
 
                 if email_exists_check is True:
                     random_password = generate_random_passwd()
-                    send_passwd_in_email(self.auth_token, username_forgot_passwd, email_forgot_passwd, self.company_name, random_password)
+                    send_passwd_in_email(self.auth_token, 
+                                         username_forgot_passwd, 
+                                         email_forgot_passwd, 
+                                         self.company_name, 
+                                         random_password)
                     change_passwd(email_forgot_passwd, random_password)
                     st.success("""¡Contraseña segura enviada a su 
                                correo electrónico!""")
@@ -181,45 +236,69 @@ class __login__:
 
     def reset_password(self) -> None:
         """
-        Creates the reset password widget and after user authentication (email and the password shared over that email), 
-        resets the password and updates the same in the _secret_auth_.json file.
+        Crea un widget para restablecer la contraseña temporal enviada al
+        correo del usuario. Recibe la contraseña enviada y actualiza la
+        nueva contraseña ingresada en la base de datos.
+        
+        Args:
+            Self
+            
+        Returns:
+            None
         """
         with st.form("Reset Password Form"):
             mensaje_email = 'Ingresa el email registrado con nosotros'
             email_reset_passwd = st.text_input("Email", 
                                                placeholder=mensaje_email)
             
-            email_exists_check, username_reset_passwd = check_email_exists(email_reset_passwd)
+            email_exists_check, username_reset_passwd = check_email_exists(
+                email_reset_passwd)
 
-            current_passwd = st.text_input("Temporary Password", placeholder= 'Please enter the password you received in the email')
-            current_passwd_check = check_current_passwd(email_reset_passwd, current_passwd)
+            mensaje_contraseña = 'Ingresa la contraseña enviada a tu email'
+            current_passwd = st.text_input("Contraseña temporal", 
+                                           placeholder=mensaje_contraseña)
+            current_passwd_check = check_current_passwd(email_reset_passwd, 
+                                                        current_passwd)
 
-            new_passwd = st.text_input("New Password", placeholder= 'Please enter a new, strong password', type = 'password')
+            mensaje_contraseña_n = 'Crea una nueva contraseña segura'
+            new_passwd = st.text_input("New Password", 
+                                       placeholder=mensaje_contraseña_n, 
+                                       type = 'password')
 
-            new_passwd_1 = st.text_input("Re - Enter New Password", placeholder= 'Please re- enter the new password', type = 'password')
+            mensaje_contraseña_n_1 = 'Re-ingresa la nueva contraseña'
+            new_passwd_1 = st.text_input("Confirmar nueva contraseña", 
+                                         placeholder=mensaje_contraseña_n_1, 
+                                         type = 'password')
 
             st.markdown("###")
-            reset_passwd_submit_button = st.form_submit_button(label = 'Reset Password')
+            reset_passwd_submit_button = st.form_submit_button(
+                label = 'Cambiar contraseña')
 
             if reset_passwd_submit_button:
                 if email_exists_check is False:
-                    st.error("Email does not exist!")
+                    st.error("Email no registrado con nosotros")
 
                 elif current_passwd_check is False:
-                    st.error("Incorrect temporary password!")
+                    st.error("Contraseña temporal incorrecta")
 
                 elif new_passwd != new_passwd_1:
-                    st.error("Passwords don't match!")
+                    st.error("Contraseñas no coinciden")
             
                 if email_exists_check is True:
                     if current_passwd_check is True:
                         change_passwd(email_reset_passwd, new_passwd)
-                        st.success("Password Reset Successfully!")
+                        st.success("Contraseña cambiada exitosamente")
                 
 
     def logout_widget(self) -> None:
         """
-        Creates the logout widget in the sidebar only if the user is logged in.
+        Crea el widget de logout y cierra la sesión del usuario.
+        
+        Args:
+            Self
+        
+        Returns:
+            None
         """
         if st.session_state['LOGGED_IN'] is True:
             del_logout = st.sidebar.empty()
@@ -239,7 +318,7 @@ class __login__:
 
     def nav_sidebar(self):
         """
-        Creates the side navigaton bar
+        Crea la barra lateral de navegación.
         """
         main_page_sidebar = st.sidebar.empty()
         with main_page_sidebar:
@@ -264,7 +343,13 @@ class __login__:
 
     def hide_menu(self) -> None:
         """
-        Hides the streamlit menu situated in the top right.
+        Esconde el menú de Streamlit de la parte superior derecha.
+        
+        Args:
+            Self
+            
+        Returns:
+            None
         """
         st.markdown(""" <style>
         #MainMenu {visibility: hidden;}
@@ -273,7 +358,7 @@ class __login__:
 
     def hide_footer(self) -> None:
         """
-        Hides the 'made with streamlit' footer.
+        Esconde el pie de página de Streamlit. 
         """
         st.markdown(""" <style>
         footer {visibility: hidden;}
@@ -282,7 +367,15 @@ class __login__:
 
     def build_login_ui(self):
         """
-        Brings everything together, calls important functions.
+        Construye la interfaz del manejo de usuarios. Trabaja con todas las 
+        funciones anteriores y las integra. Retorna el estado de la sesión del 
+        usuario en una variable de sesión.
+
+        Args:
+            Self
+            
+        Returns:
+            bool: Retorna True si el usuario está autenticado, de lo contrario
         """
         if 'LOGGED_IN' not in st.session_state:
             st.session_state['LOGGED_IN'] = False

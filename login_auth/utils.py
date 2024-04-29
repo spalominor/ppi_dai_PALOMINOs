@@ -24,6 +24,14 @@ ph = PasswordHasher()
 def check_usr_pass(username: str, password: str) -> bool:
     """
     Autentica el nombre de usuario y la contraseña.
+    
+    Args:
+        username (str): El nombre de usuario
+        password (str): La contraseña
+        
+    Returns:
+        bool: True si el nombre de usuario y la contraseña son correctos, 
+              False si no lo son
     """
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -45,7 +53,13 @@ def check_usr_pass(username: str, password: str) -> bool:
 
 def load_lottieurl(url: str) -> str:
     """
-    Fetches the lottie animation using the URL.
+    Carga un GIF como archivo JSON desde una URL.
+    
+    Args:
+        url (str): La URL del GIF.
+
+    Returns:
+        str: El archivo JSON del GIF.
     """
     try:
         r = requests.get(url)
@@ -58,7 +72,13 @@ def load_lottieurl(url: str) -> str:
 
 def check_valid_name(name_sign_up: str) -> bool:
     """
-    Checks if the user entered a valid name while creating the account.
+    Verificar si el nombre es válido con expresiones regulares.
+    
+    Args:
+        name_sign_up (str): El nombre a verificar
+        
+    Returns:
+        bool: True si el nombre es válido, False si no lo es
     """
     name_regex = (r'^[A-Za-z_][A-Za-z0-9_]*')
 
@@ -69,7 +89,13 @@ def check_valid_name(name_sign_up: str) -> bool:
 
 def check_valid_email(email_sign_up: str) -> bool:
     """
-    Checks if the user entered a valid email while creating the account.
+    Verifica si el correo electrónico es válido con expresiones regulares.
+    
+    Args:
+        email_sign_up (str): El correo electrónico a verificar
+    
+    Returns:
+        bool: True si el correo electrónico es válido, False si no lo es
     """
     # Compilar la expresión regular
     regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@' +
@@ -83,6 +109,13 @@ def check_valid_email(email_sign_up: str) -> bool:
 def check_unique_email(email_sign_up: str) -> bool:
     """
     Verifica si el correo electrónico ya está registrado en la base de datos.
+    
+    Args:
+        email_sign_up (str): El correo electrónico a verificar
+    
+    Returns:
+        bool: True si el correo electrónico no está registrado, 
+        False si ya lo está
     """
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -350,7 +383,14 @@ def change_passwd(email: str, new_password: str) -> None:
 
 def check_current_passwd(email: str, current_passwd: str) -> bool:
     """
-    Autentica la contraseña actual del usuario.
+    Autentica la contraseña actual del usuario buscando por su email.
+    
+    Args:
+        email (str): El correo electrónico del usuario
+        current_passwd (str): La contraseña actual del usuario
+        
+    Returns:
+        bool: True si la contraseña actual es correcta, False si no lo es
     """
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -359,7 +399,8 @@ def check_current_passwd(email: str, current_passwd: str) -> bool:
         return False
 
     try:
-        cursor.execute("SELECT clave FROM usuarios WHERE email = %s", (email,))
+        cursor.execute("SELECT clave FROM usuarios WHERE email = %s", 
+                       (email,))
         hashed_password = cursor.fetchone()
         if hashed_password and ph.verify(hashed_password[0], current_passwd):
             print("Contraseña actual verificada.", email)
