@@ -89,9 +89,11 @@ class __login__:
                 if '__username__' in fetched_cookies.keys():
                     if fetched_cookies['__username__'] != '1c9a923f-fb21-4a91-b3f3-5f18e3f01182':
                         st.session_state['LOGGED_IN'] = True
+                        st.session_state['username'] = fetched_cookies['__username__']
 
         if st.session_state['LOGGED_IN'] is False:
-            st.session_state['LOGOUT_BUTTON_HIT'] = False 
+            st.session_state['LOGOUT_BUTTON_HIT'] = False
+            st.session_state['username'] = None
 
             del_login = st.empty()
             with del_login.form("Login Form"):
@@ -306,13 +308,6 @@ class __login__:
             
         if 'username' not in st.session_state:
             st.session_state['username'] = None
-
-        auth_json_exists_bool = self.check_auth_json_file_exists(
-            '_secret_auth_.json')
-
-        if auth_json_exists_bool is False:
-            with open("_secret_auth_.json", "w") as auth_json:
-                json.dump([], auth_json)
 
         main_page_sidebar, selected_option = self.nav_sidebar()
 

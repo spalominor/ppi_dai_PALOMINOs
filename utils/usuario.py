@@ -15,6 +15,8 @@ def obtener_nombre_usuario():
     """
     if st.session_state['LOGGED_IN']:
         username = st.session_state['username']
+        if username is None:
+            return "Usuario is None"
         return username
     else:
         return "No logeado"
