@@ -34,7 +34,7 @@ def check_usr_pass(username: str, password: str) -> bool:
         hashed_password = cursor.fetchone()
         if hashed_password and ph.verify(hashed_password[0], password):
             return True
-    except psycopg2.Error as e:
+    except Exception as e:
         print("Error al autenticar el usuario:", e)
     finally:
         cursor.close()
@@ -354,14 +354,17 @@ def check_current_passwd(email: str, current_passwd: str) -> bool:
     """
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
+    
+    if email is None or current_passwd is None:
+        return False
 
     try:
-        cursor.execute("SELECT clave FROM usuarios WHERE email = %s", (email))
+        cursor.execute("SELECT clave FROM usuarios WHERE email = %s", (email,))
         hashed_password = cursor.fetchone()
         if hashed_password and ph.verify(hashed_password[0], current_passwd):
             print("Contraseña actual verificada.", email)
             return True
-    except psycopg2.Error as e:
+    except Exception as e:
         print("Error al verificar la contraseña actual:", e)
     finally:
         cursor.close()

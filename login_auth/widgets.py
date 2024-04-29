@@ -56,26 +56,6 @@ class __login__:
             st.stop()   
 
 
-    def check_auth_json_file_exists(self, auth_filename: str) -> bool:
-        """
-        Checks if the auth file (where the user info is stored) already exists.
-        """
-        file_names = []
-        for path in os.listdir('./'):
-            if os.path.isfile(os.path.join('./', path)):
-                file_names.append(path)
-
-        present_files = []
-        for file_name in file_names:
-            if auth_filename in file_name:
-                present_files.append(file_name)
-                    
-            present_files = sorted(present_files)
-            if len(present_files) > 0:
-                return True
-        return False
-
-
     def login_widget(self) -> None:
         """
         Creates the login widget, checks and sets cookies, authenticates the users.
@@ -178,11 +158,14 @@ class __login__:
         containing a random password.
         """
         with st.form("Forgot Password Form"):
-            email_forgot_passwd = st.text_input("Email", placeholder= 'Please enter your email')
+            mensaje_email = 'Ingresa el email registrado con nosotros'
+            email_forgot_passwd = st.text_input("Email", 
+                                                placeholder=mensaje_email)
             email_exists_check, username_forgot_passwd = check_email_exists(email_forgot_passwd)
 
             st.markdown("###")
-            forgot_passwd_submit_button = st.form_submit_button(label = 'Get Password')
+            forgot_passwd_submit_button = st.form_submit_button(
+                label = 'Enviar contraseña')
 
             if forgot_passwd_submit_button:
                 if email_exists_check is False:
@@ -190,7 +173,6 @@ class __login__:
 
                 if email_exists_check is True:
                     random_password = generate_random_passwd()
-                    st.write(self.auth_token)
                     send_passwd_in_email(self.auth_token, username_forgot_passwd, email_forgot_passwd, self.company_name, random_password)
                     change_passwd(email_forgot_passwd, random_password)
                     st.success("""¡Contraseña segura enviada a su 
@@ -203,7 +185,10 @@ class __login__:
         resets the password and updates the same in the _secret_auth_.json file.
         """
         with st.form("Reset Password Form"):
-            email_reset_passwd = st.text_input("Email", placeholder= 'Please enter your email')
+            mensaje_email = 'Ingresa el email registrado con nosotros'
+            email_reset_passwd = st.text_input("Email", 
+                                               placeholder=mensaje_email)
+            
             email_exists_check, username_reset_passwd = check_email_exists(email_reset_passwd)
 
             current_passwd = st.text_input("Temporary Password", placeholder= 'Please enter the password you received in the email')
