@@ -1,28 +1,45 @@
+# Importar bibliotecas estándar de Python
 import re
-import json
+import os
+
+# Importar bibliotecas de terceros
+import psycopg2
 from courier.client import Courier
 import secrets
+from dotenv import load_dotenv
 from argon2 import PasswordHasher
 import requests
 
 
+
+# Cargar variables de entorno desde el archivo .env
+load_dotenv()
+
+# Obtener el valor de DATABASE_URL del entorno
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+# Crear una instancia del objeto para cifrar contraseñas
 ph = PasswordHasher() 
 
 def check_usr_pass(username: str, password: str) -> bool:
     """
-    Authenticates the username and password.
+    Autentica el nombre de usuario y la contraseña.
     """
-    with open("_secret_auth_.json", "r") as auth_json:
-        authorized_user_data = json.load(auth_json)
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
 
-    for registered_user in authorized_user_data:
-        if registered_user['username'] == username:
-            try:
-                passwd_verification_bool = ph.verify(registered_user['password'], password)
-                if passwd_verification_bool is True:
-                    return True
-            except Exception as e:
-                print(e)
+    try:
+        cursor.execute("SELECT clave FROM usuarios WHERE username = %s", 
+                       (username,))
+        hashed_password = cursor.fetchone()
+        if hashed_password and ph.verify(hashed_password[0], password):
+            return True
+    except psycopg2.Error as e:
+        print("Error al autenticar el usuario:", e)
+    finally:
+        cursor.close()
+        conn.close()
+    
     return False
 
 
@@ -54,7 +71,9 @@ def check_valid_email(email_sign_up: str) -> bool:
     """
     Checks if the user entered a valid email while creating the account.
     """
-    regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+    # Compilar la expresión regular
+    regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@' +
+                        r'[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
 
     if re.fullmatch(regex, email_sign_up):
         return True
@@ -63,106 +82,185 @@ def check_valid_email(email_sign_up: str) -> bool:
 
 def check_unique_email(email_sign_up: str) -> bool:
     """
-    Checks if the email already exists (since email needs to be unique).
+    Verifica si el correo electrónico ya está registrado en la base de datos.
     """
-    authorized_user_data_master = list()
-    with open("_secret_auth_.json", "r") as auth_json:
-        authorized_users_data = json.load(auth_json)
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
 
-        for user in authorized_users_data:
-            authorized_user_data_master.append(user['email'])
+    try:
+        cursor.execute("SELECT email FROM usuarios WHERE email = %s", 
+                       (email_sign_up,))
+        if cursor.fetchone():
+            return False
+    except psycopg2.Error as e:
+        print("Error al verificar la unicidad del correo electrónico:", e)
+    finally:
+        cursor.close()
+        conn.close()
 
-    if email_sign_up in authorized_user_data_master:
-        return False
     return True
 
 
 def non_empty_str_check(username_sign_up: str) -> bool:
     """
-    Checks for non-empty strings.
-    """
-    empty_count = 0
-    for i in username_sign_up:
-        if i == ' ':
-            empty_count = empty_count + 1
-            if empty_count == len(username_sign_up):
-                return False
-
-    if not username_sign_up:
-        return False
-    return True
-
-
-def check_unique_usr(username_sign_up: str):
-    """
-    Checks if the username already exists (since username needs to be unique),
-    also checks for non - empty username.
-    """
-    authorized_user_data_master = list()
-    with open("_secret_auth_.json", "r") as auth_json:
-        authorized_users_data = json.load(auth_json)
-
-        for user in authorized_users_data:
-            authorized_user_data_master.append(user['username'])
-
-    if username_sign_up in authorized_user_data_master:
-        return False
+    Verifica si la cadena de texto no está vacía.
     
-    non_empty_check = non_empty_str_check(username_sign_up)
-
-    if non_empty_check is False:
-        return None
+    Args:
+        username_sign_up (str): La cadena de texto a verificar.
+        
+    Returns:
+        bool: True si la cadena de texto no está vacía, False si está vacía.
+    """
+    if not username_sign_up or username_sign_up.isspace():
+        return False
     return True
 
 
-def register_new_usr(name_sign_up: str, email_sign_up: str, username_sign_up: str, password_sign_up: str) -> None:
+def check_unique_usr(username_sign_up: str) -> bool:
     """
-    Saves the information of the new user in the _secret_auth.json file.
-    """
-    new_usr_data = {'username': username_sign_up, 'name': name_sign_up, 'email': email_sign_up, 'password': ph.hash(password_sign_up)}
-
-    with open("_secret_auth_.json", "r") as auth_json:
-        authorized_user_data = json.load(auth_json)
-
-    with open("_secret_auth_.json", "w") as auth_json_write:
-        authorized_user_data.append(new_usr_data)
-        json.dump(authorized_user_data, auth_json_write)
-
-
-def check_username_exists(user_name: str) -> bool:
-    """
-    Checks if the username exists in the _secret_auth.json file.
-    """
-    authorized_user_data_master = list()
-    with open("_secret_auth_.json", "r") as auth_json:
-        authorized_users_data = json.load(auth_json)
-
-        for user in authorized_users_data:
-            authorized_user_data_master.append(user['username'])
+    Verifica si el nombre de usuario ya está registrado en la base de datos 
+    y si no está vacío.
+    
+    Args:
+        username_sign_up (str): El nombre de usuario a verificar
         
-    if user_name in authorized_user_data_master:
+    Returns:
+        bool: True si el nombre de usuario no está registrado y no está vacío, 
+              False si ya está registrado o está vacío
+    """
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+
+    try:
+        # Verificar si el nombre de usuario ya está en uso
+        cursor.execute("SELECT username FROM usuarios WHERE username = %s", 
+                       (username_sign_up,))
+        if cursor.fetchone():
+            return False
+        
+        # Verificar si el nombre de usuario no está vacío
+        if not non_empty_str_check(username_sign_up):
+            return False
+        
         return True
+    except psycopg2.Error as e:
+        print("Error al verificar la unicidad del nombre de usuario:", e)
+        return None
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def register_new_usr(name: str, 
+                     email: str, 
+                     username: str, 
+                     password: str) -> None:
+    """
+    Registra la información del nuevo usuario en la base de datos.
+    
+    Args:
+        name (str): El nombre del usuario
+        email (str): El correo electrónico del usuario
+        username (str): El nombre de usuario
+        password (str): La contraseña del usuario
+        
+    Returns:
+        None
+    """
+    hashed_password = ph.hash(password)
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO usuarios (
+                nombre, email, username, clave) 
+            VALUES (%s, %s, %s, %s)
+            """, (name, email, username, hashed_password)
+            )
+        conn.commit()
+        print("Usuario registrado exitosamente.", username)
+    except psycopg2.Error as e:
+        print("Error al registrar el usuario:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def check_username_exists(username: str) -> bool:
+    """
+    Verifica si el nombre de usuario ya existe en la base de datos.
+    
+    Args:
+        username (str): El nombre de usuario a verificar
+        
+    Returns:
+        bool: True si el nombre de usuario ya existe, False si no existe
+    """
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT * FROM usuarios WHERE username = %s", (username))
+        if cursor.fetchone():
+            return True
+    except psycopg2.Error as e:
+        print("Error al verificar el nombre de usuario:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
     return False
         
 
-def check_email_exists(email_forgot_passwd: str):
+def check_email_exists(email: str):
     """
-    Checks if the email entered is present in the _secret_auth.json file.
+    Verifica si el correo electrónico ya está registrado en la base de datos.
+    Si está registrado, devuelve True junto con el nombre de usuario asociado.
+    Si no está registrado, devuelve False.
+    
+    Args:
+        email (str): El correo electrónico del usuario
+        
+    Returns:
+        tuple: (bool, str)
     """
-    with open("_secret_auth_.json", "r") as auth_json:
-        authorized_users_data = json.load(auth_json)
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
 
-        for user in authorized_users_data:
-            if user['email'] == email_forgot_passwd:
-                    return True, user['username']
-    return False, None
+    try:
+        cursor.execute(
+            "SELECT username FROM usuarios WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        if user:
+            # Devuelve True y el nombre de usuario asociado al email
+            return True, user[0]  
+    except psycopg2.Error as e:
+        print("Error al verificar el correo electrónico:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
+    # Devuelve False si el correo electrónico no está registrado
+    return False, None  
+
 
 
 def generate_random_passwd() -> str:
     """
-    Generates a random password to be sent in email.
+    Genera una clave temporal de 10 caracteres aleatorios.
+    
+    Args: 
+        None
+        
+    Returns:
+        str: La clave temporal generada aleatoriamente
     """
+    # Definir la longitud de la clave temporal
     password_length = 10
+    
+    # Retornar una clave temporal aleatoria
     return secrets.token_urlsafe(password_length)
 
 
@@ -172,7 +270,7 @@ def send_passwd_in_email(auth_token: str,
                          company_name: str, 
                          random_password: str) -> None:
     """
-    Triggers an email to the user containing the randomly generated password.
+    Envía la clave temporal al usuario que olvidó la contraseña.
     
     Args:
         auth_token (str): El token de autenticación de Courier (Email API)
@@ -191,46 +289,82 @@ def send_passwd_in_email(auth_token: str,
     client.send(
     message={
         "to": {
-        "email": email_forgot_passwd
+            "email": email_forgot_passwd
         },
         "content": {
-        "title": company_name + ": Login Password!",
-        "body": "¡Hola! " + username_forgot_passwd + "," + "\n" + "\n" + "tu clave temporal es: " + random_password  + "\n" + "\n" + "{{info}}"
+            "title": company_name + ": Clave temporal",
+            "body": (
+                "¡Hola! " + username_forgot_passwd + "," + "\n" +
+                "\n" +
+                "tu clave temporal es: " + random_password + "\n" +
+                "\n" +
+                "{{info}}"
+            )
         },
-        "data":{
-        "info": "Por favor cambia tu contraseña nuevamente por razones de seguridad."
+        "data": {
+            "info": "Por favor cambia tu contraseña nuevamente por seguridad."
         }
     }
-    )
+)
 
 
-def change_passwd(email_: str, random_password: str) -> None:
+def change_passwd(email: str, new_password: str) -> None:
     """
-    Replaces the old password with the newly generated password.
+    Actualiza la contraseña de un usuario en la base de datos.
+    
+    Args:
+        email (str): El correo electrónico del usuario
+        new_password (str): La nueva contraseña del usuario
+        
+    Returns:
+        None
     """
-    with open("_secret_auth_.json", "r") as auth_json:
-        authorized_users_data = json.load(auth_json)
+    # Cifrar la nueva contraseña
+    hashed_password = ph.hash(new_password)
+    
+    # Conectar a la base de datos
+    conn = psycopg2.connect(DATABASE_URL)
+    
+    # Crear un cursor para ejecutar consultas SQL
+    cursor = conn.cursor()
 
-    with open("_secret_auth_.json", "w") as auth_json_:
-        for user in authorized_users_data:
-            if user['email'] == email_:
-                user['password'] = ph.hash(random_password)
-        json.dump(authorized_users_data, auth_json_)
+    try:
+        # Actualizar la contraseña del usuario
+        cursor.execute(
+            "UPDATE usuarios SET clave = %s WHERE email = %s", 
+            (hashed_password, email))
+        conn.commit()
+        
+        # Imprimir un mensaje de éxito
+        print("Contraseña de usuario actualizada exitosamente.")
+    except psycopg2.Error as e:
+        # Imprimir un mensaje de error si ocurre un problema
+        print("Error al actualizar la contraseña de usuario:", e)
+    finally:
+        # Cerrar el cursor
+        cursor.close()
+        
+        # Cerrar la conexión a la base de datos
+        conn.close()
     
 
-def check_current_passwd(email_reset_passwd: str, current_passwd: str) -> bool:
+def check_current_passwd(email: str, current_passwd: str) -> bool:
     """
-    Authenticates the password entered against the username when 
-    resetting the password.
+    Autentica la contraseña actual del usuario.
     """
-    with open("_secret_auth_.json", "r") as auth_json:
-        authorized_users_data = json.load(auth_json)
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
 
-        for user in authorized_users_data:
-            if user['email'] == email_reset_passwd:
-                try:
-                    if ph.verify(user['password'], current_passwd) is True:
-                        return True
-                except Exception as e:
-                    print(e)
+    try:
+        cursor.execute("SELECT password FROM usuarios WHERE email = %s", (email))
+        hashed_password = cursor.fetchone()
+        if hashed_password and ph.verify(hashed_password[0], current_passwd):
+            print("Contraseña actual verificada.", email)
+            return True
+    except psycopg2.Error as e:
+        print("Error al verificar la contraseña actual:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
     return False

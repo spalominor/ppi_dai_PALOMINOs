@@ -1,4 +1,7 @@
+# Importar las librerías necesarias
 import streamlit as st
+
+# Importar los módulos y las funciones necesarias
 import informacion
 from utils.usuario import username
 
