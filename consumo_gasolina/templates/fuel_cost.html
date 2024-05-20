@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}
+Cálculo de Costo de Combustible
+{% endblock %}
+
+{% block content %}
+    <h1>Cálculo de Costo de Combustible</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Calcular</button>
+    </form>
+
+    {% if fuel_cost %}
+        {% if fuel_cost.distance == 0 %}
+            <p>No se ha podido calcular. Prueba con otra búsqueda o más tarde</p>
+        {% else %}
+            <h2>Resultado del Cálculo</h2>
+            <p><strong>Distancia: </strong> {{ fuel_cost.distance }} km</p>
+            <p><strong>Combustible Necesario: </strong> {{ fuel_cost.fuel }} litros de {{fuel_cost.fuel_type}}</p>
+            <p><strong>Costo Total de Combustible: </strong> {{ fuel_cost.cost }} pesos colombianos</p>
+            <p><strong>Tipo de Combustible: </strong> {{ fuel_cost.fuel_type }}</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %} {% block content%}
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Registro de usuario</title>
+</head>
+<h2>Registro de usuario</h2>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }} {% if form.errors %}
+  <ul>
+    {% for field, errors in form.errors.items %} {% for error in errors %}
+    <li>{{ error }}</li>
+    {% endfor %} {% endfor %}
+  </ul>
+  {% endif %}
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="privacyCheckbox" />
+    <label class="form-check-label" for="privacyCheckbox">
+      He leído y acepto la
+      <a href="{% url 'data_policy' %}" target="_blank"
+        >política de privacidad</a
+      >.
+    </label>
+  </div>
+  <div id="privacyPolicy" style="display: none">
+    {% include 'data_policy.html' %}
+  </div>
+  <button type="submit" class="btn btn-primary" id="registerButton" disabled>
+    Registrarse
+  </button>
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const checkbox = document.getElementById("privacyCheckbox");
+    const policyContent = document.getElementById("privacyPolicy");
+    const registerButton = document.getElementById("registerButton");
+
+    checkbox.addEventListener("change", function () {
+      if (this.checked) {
+        policyContent.style.display = "block";
+        registerButton.disabled = false;
+      } else {
+        policyContent.style.display = "none";
+        registerButton.disabled = true;
+      }
+    });
+  });
+</script>
+
+{% endblock %}

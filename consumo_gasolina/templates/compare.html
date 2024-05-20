@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Comparar Vehículos{% endblock %}
+{% block content %}
+<h1>Comparar Vehículos</h1>
+<div style="display: flex; justify-content: space-between;">
+    <!-- Columna izquierda -->
+    <div style="width: 48%;">
+        <h2>Búsqueda de Vehículos</h2>
+        <form id="VehicleSearchForm" method="post">
+            {% csrf_token %}
+            <div class="input-with-button">
+                <label for="id_brand">Marca:</label>
+                {{ form.brand }}
+                <button type="button" onclick="clearInput('id_brand')">Limpiar</button>
+            </div>
+            <div class="input-with-button">
+                <label for="id_sub_brand">Submarca:</label>
+                {{ form.sub_brand }}
+                <button type="button" onclick="clearInput('id_sub_brand')">Limpiar</button>
+            </div>
+            <div class="input-with-button">
+                <label for="id_model_year">Modelo:</label>
+                {{ form.model_year }}
+                <button type="button" onclick="clearInput('id_model_year')">Limpiar</button>
+            </div>
+            <div class="input-with-button">
+                <label for="id_version">Versión:</label>
+                {{ form.version }}
+                <button type="button" onclick="clearInput('id_version')">Limpiar</button>
+            </div>
+            <button type="button" onclick="searchVehicles()">Buscar</button>
+        </form>
+        <!-- Resultados de la Búsqueda -->
+        <div id="search-results">
+            <!-- Aquí se mostrarán los resultados de la búsqueda -->
+        </div>
+    </div>
+    <!-- Columna derecha -->
+    <div style="width: 48%;">
+        <h2>Vehículos Seleccionados para Comparar:</h2>
+        <ul id="selected-vehicles-list">
+            <!-- Aquí se mostrarán los vehículos seleccionados -->
+        </ul>
+        <button type="button" onclick="compareSelectedVehicles()">Comparar</button>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var vehiclesToCompare = [];
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    function clearInput(inputId) {
+        document.getElementById(inputId).value = '';
+    }
+
+    function searchVehicles() {
+        var formData = $('#VehicleSearchForm').serialize();
+        $.ajax({
+            type: "POST",
+            url: "{% url 'search_vehicles' %}",
+            data: formData,
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            success: function(response) {
+                var searchResultsDiv = $('#search-results');
+                searchResultsDiv.empty();
+                var vehicles = response.vehicles;
+                if (vehicles.length > 0) {
+                    var resultsList = $('<ul></ul>');
+                    vehicles.forEach(function(vehicle) {
+                        var listItem = $('<li></li>').text(
+                            vehicle.marca + ' ' + vehicle.submarca + ' ' + vehicle.modelo + ' ' + vehicle.version
+                        );
+                        var addButton = $('<button></button>').text('Añadir').click(function() {
+                            addVehicleToCompare(vehicle);
+                        });
+                        listItem.append(addButton);
+                        resultsList.append(listItem);
+                    });
+                    searchResultsDiv.append(resultsList);
+                } else {
+                    searchResultsDiv.text('No se encontraron vehículos.');
+                }
+            }
+        });
+    }
+
+    function addVehicleToCompare(vehicle) {
+        vehiclesToCompare.push(vehicle);
+        updateSelectedVehiclesList();
+    }
+
+    function removeVehicle(index) {
+        vehiclesToCompare.splice(index, 1);
+        updateSelectedVehiclesList();
+    }
+
+    function updateSelectedVehiclesList() {
+        var list = document.getElementById('selected-vehicles-list');
+        list.innerHTML = '';
+        vehiclesToCompare.forEach(function(vehicle, index) {
+            var listItem = document.createElement('li');
+            listItem.textContent = vehicle.marca + ' ' + vehicle.submarca + ' ' + vehicle.modelo + ' ' + vehicle.version;
+            var removeButton = document.createElement('button');
+            removeButton.textContent = 'Eliminar';
+            removeButton.onclick = function() {
+                removeVehicle(index);
+            };
+            listItem.appendChild(removeButton);
+            list.appendChild(listItem);
+        });
+
+        // Enviar la lista de vehículos seleccionados al servidor
+        $.ajax({
+            type: "POST",
+            url: "{% url 'update_selected_vehicles' %}",
+            data: {
+                selected_vehicles: JSON.stringify(vehiclesToCompare),
+                csrfmiddlewaretoken: csrftoken
+            },
+            success: function(response) {
+                console.log(response);
+            }
+        });
+    }
+
+    function compareSelectedVehicles() {
+        $.ajax({
+            type: "POST",
+            url: "{% url 'get_selected_vehicles' %}",
+            data: JSON.stringify(vehiclesToCompare),
+            contentType: "application/json",
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            success: function(response) {
+                // Manejar la respuesta del servidor
+                if (response.success) {
+                    window.location.href = "{% url 'analyze_selected_vehicles' %}";
+                } else {
+                    alert('Error al comparar los vehículos.');
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

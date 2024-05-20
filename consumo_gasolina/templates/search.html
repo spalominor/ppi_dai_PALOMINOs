@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Búsqueda de Vehículos{% endblock %}
+
+{% block content %}
+
+<h1>Búsqueda de Vehículos</h1>
+<form id="VehicleSearchForm" method="post">
+    {% csrf_token %}
+    <!-- Agregar los campos del formulario junto con sus botones de limpieza -->
+    <div class="input-with-button">
+        <label for="id_brand">Marca:</label>
+        {{ form.brand }}
+        <button type="button" onclick="clearInput('id_brand')">Limpiar</button>
+    </div>
+    <div class="input-with-button">
+        <label for="id_sub_brand">Submarca:</label>
+        {{ form.sub_brand }}
+        <button type="button" onclick="clearInput('id_sub_brand')">Limpiar</button>
+    </div>
+    <div class="input-with-button">
+        <label for="id_model_year">Modelo:</label>
+        {{ form.model_year }}
+        <button type="button" onclick="clearInput('id_model_year')">Limpiar</button>
+    </div>
+    <div class="input-with-button">
+        <label for="id_version">Versión:</label>
+        {{ form.version }}
+        <button type="button" onclick="clearInput('id_version')">Limpiar</button>
+    </div>
+    <button type="button" onclick="clearForm()">Limpiar Formulario</button>
+    <button type="submit">Buscar</button>
+</form>
+
+<!-- Resultados de la búsqueda -->
+{% if not vehicles.empty %}
+    <h2>Resultados de la Búsqueda:</h2>
+    <ul>
+        {% for vehicle in vehicles %}
+            <li>
+                <strong>Marca:</strong> {{ vehicle.marca }}, 
+                <strong>Submarca:</strong> {{ vehicle.submarca }},
+                <strong>Año Modelo:</strong> {{ vehicle.modelo }}, 
+                <strong>Versión:</strong> {{ vehicle.version }},
+                <strong>Rendimiento en ciudad:</strong> {{ vehicle.rendimiento_ciudad }},
+                <!-- Definir la sección de más detalles para mostrar -->
+                <button type="button" onclick="showDetails('{{ vehicle.id }}')">Ver más</button>
+                <div id="details_{{ vehicle.id }}" style="display: none;">
+                    <!-- Se muestran más detalles del vehículo, como transmisión, cilindros, etc. -->
+                    <strong>Transmisión:</strong> {{ vehicle.transmision }},
+                    <strong>Cilindros:</strong> {{ vehicle.cilindros }},
+                    <strong>Combustible:</strong> {{ vehicle.combustible }},
+                    <strong>Rendimiento en carretera:</strong> {{ vehicle.rendimiento_carretera }},
+                    <strong>Rendimiento combinado:</strong> {{ vehicle.rendimiento_combinado }},
+                    <strong>Calificación efecto invernadero:</strong> {{ vehicle.efecto_invernadero }},
+                    <strong>Calificación contaminación del aire:</strong> {{ vehicle.contaminacion_aire }},
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Prueba haciendo una búsqueda</p>
+{% endif %}
+
+</body>
+
+<script>
+    function clearInput(inputId) {
+        document.getElementById(inputId).value = '';
+    }
+
+    function clearForm(formId) {
+        document.getElementById('id_brand').value = '';
+        document.getElementById('id_sub_brand').value = '';
+        document.getElementById('id_model_year').value = '';
+        document.getElementById('id_version').value = '';
+        document.getElementById("VehicleSearchForm").submit();
+    }
+    function showDetails(vehicleId) {
+        var detailsDiv = document.getElementById('details_' + vehicleId);
+        if (detailsDiv.style.display === 'none') {
+            detailsDiv.style.display = 'block';
+        } else {
+            detailsDiv.style.display = 'none';
+        }
+    }
+</script>
+
+{% endblock %}

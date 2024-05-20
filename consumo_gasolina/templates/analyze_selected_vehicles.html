@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Analizar Vehículos{% endblock %}
+
+{% block content %}
+<h1>Tabla de comparación</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Marca</th>
+            <th>Submarca</th>
+            <th>Modelo</th>
+            <th>Versión</th>
+            <th>Transmisión</th>
+            <th>Combustible</th>
+            <th>Categoría</th>
+            <th>Cilindros</th>
+            <th>Potencia (HP)</th>
+            <th>Tamaño (L)</th>
+            <th>Rendimiento Ciudad (km/L)</th>
+            <th>Rendimiento Carretera (km/L)</th>
+            <th>Rendimiento Combinado (km/L)</th>
+            <th>CO2 (g/km)</th>
+            <th>NOx (g/km)</th>
+            <th>Calificación gases de efecto invernadero (10: Eficiente)</th>
+            <th>Calificación contaminación del aire (10: Más limpio)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vehicle in selected_vehicles %}
+        <tr>
+            <td>{{ vehicle.marca }}</td>
+            <td>{{ vehicle.submarca }}</td>
+            <td>{{ vehicle.modelo }}</td>
+            <td>{{ vehicle.version }}</td>
+            <td>{{ vehicle.transmision }}</td>
+            <td>{{ vehicle.combustible }}</td>
+            <td>{{ vehicle.categoria }}</td>
+            <td>{{ vehicle.cilindros }}</td>
+            <td>{{ vehicle.potencia }}</td>
+            <td>{{ vehicle.tamano }}</td>
+            <td>{{ vehicle.rendimiento_ciudad }}</td>
+            <td>{{ vehicle.rendimiento_carretera }}</td>
+            <td>{{ vehicle.rendimiento_combinado }}</td>
+            <td>{{ vehicle.co2 }}</td>
+            <td>{{ vehicle.nox }}</td>
+            <td>{{ vehicle.efecto_invernadero }}</td>
+            <td>{% if vehicle.contaminacion_aire == '?' %}0{% else %}{{ vehicle.contaminacion_aire }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>Diferencias entre Vehículos</h2>
+<table border="1">
+    <tr>
+      <th></th> <!-- Espacio vacío para el índice -->
+      {% for col in analysis_vehicles.columns %}
+        <th>{{ col }}</th> <!-- Nombres de las columnas -->
+      {% endfor %}
+    </tr>
+    {% for index, row in analysis_vehicles.iterrows %}
+      <tr>
+        <td>{{ index }}</td> <!-- Nombre del índice -->
+        {% for cell in row %}
+            {% if index in columns_with_percentage and cell < 0 %}
+                <td>{{ cell }}%</td> <!-- Contenido de la fila -->
+            {% else %}
+                <td>{{ cell }}</td> <!-- Contenido de la fila -->
+            {% endif %}
+        {% endfor %}
+      </tr>
+    {% endfor %}
+</table>
+<a href={% url 'home' %}>Regresar a la página principal</a>
+<a href={% url 'compare_vehicles' %}>Comparar más vehículos</a>
+{% endblock %}
+
+
+

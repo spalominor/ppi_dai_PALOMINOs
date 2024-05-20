@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de sesión</title>
+</head>
+<body>
+    <h2>Iniciar sesión</h2>
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        {% if form.errors %}
+            <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <button type="submit">Iniciar sesión</button>
+    </form>
+
+    <a href="{% url 'signup' %}">Regístrate aquí</a>
+    <a href="{% url 'password_reset' %}">Olvidé mi contraseña</a>
+    
+</body>
+</html>
+{% endblock %}

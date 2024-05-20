@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}  <!-- Cargar la etiqueta static al inicio del archivo -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flutas</title>
+    <link rel="icon" href="{% static '/favicon.ico' %}" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Inicio</a></li>
+                <li><a href="{% url 'compare_vehicles' %}">Comparar</a></li>
+                <li><a href="{% url 'calculate_fuel_cost' %}">Costo de ruta</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'my_account' %}">Mi cuenta</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+                    <li><a href="{% url 'signup' %}">Registrarse</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>
