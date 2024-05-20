@@ -22,6 +22,8 @@ from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError as Error
 import string
 
+from consumo_gasolina.models import Route, Vehicle
+
 
 
 class SignUpForm(UserCreationForm):
@@ -397,3 +399,26 @@ class FuelCostForm(forms.Form):
                                   choices=[('gasolina', 'Gasolina'), 
                                            ('diesel', 'Diesel')], 
                                 help_text='Seleccione el tipo de combustible')
+    
+
+class VehicleForm(forms.ModelForm):
+    """
+    Formulario para la creación de vehículos.
+    """
+    class Meta:
+        model = Vehicle
+        fields = ['brand', 
+                  'sub_brand', 
+                  'model_year', 
+                  'version', 
+                  'fuel_efficiency', 
+                  'fuel_type', 
+                  'license_plate']
+
+class RouteForm(forms.ModelForm):
+    """
+    Formulario para la creación de rutas.
+    """
+    class Meta:
+        model = Route
+        fields = ['start', 'end', 'description']

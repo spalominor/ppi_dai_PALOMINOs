@@ -14,18 +14,23 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 
 # Importa los modelos y formularios personalizados
+from consumo_gasolina.models import Route, Vehicle
 from flutasapp.forms import (
     ChangePasswordForm,
     FuelCostForm,
     LoginForm,
     PasswordResetRequestForm,
+    RouteForm,
     SignUpForm,
+    VehicleForm,
     VehicleSearchForm,
 )
 
 # Importa la clases de utils para buscar y analizar vehículos
 from utils.analyze_vehicles import VehicleAnalyzer
 from utils.calculate_cost import CostCalculator
+from utils.draw_graphs import Drawer
+from utils.geo_utils import GeoUtils
 from utils.search_vehicle import VehicleSearcher
 
 # Importa la función para enviar correos electrónicos
@@ -39,6 +44,12 @@ ANALYZER = VehicleAnalyzer()
 
 # Crea una instancia de CostCalculator para calcular el costo de combustible
 CALCULATOR = CostCalculator()
+
+# Crea una instancia de GeoUtils para geocodificar direcciones
+GEOUTILS = GeoUtils()
+
+# Crear una instancia de Drawer para dibujar gráficas
+DRAWER = Drawer()
 
 # Create your views here.
 def search(request):
@@ -464,3 +475,142 @@ def data_policy_en(request):
         tratamiento de datos personales en inglés.
     """
     return render(request, 'data_policy_en.html')
+
+
+def create_vehicle(request):
+    """
+    Vista para crear un nuevo vehículo.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza el formulario de creación 
+        de un nuevo vehículo.
+    """
+    if request.method == 'POST':
+        form = VehicleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('analyze_vehicles')  # Redirigir a una página de éxito
+    else:
+        form = VehicleForm()
+    return render(request, 'crear_vehiculo.html', {'form': form})
+
+
+def create_route(request):
+    """
+    Vista para crear una nueva ruta.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza el formulario de creación 
+        de una nueva ruta.
+    """
+    if request.method == 'POST':
+        form = RouteForm(request.POST)
+        if form.is_valid():
+            # Obtener los datos del formulario
+            start_address = form.cleaned_data['start']
+            end_address = form.cleaned_data['end']
+            description = form.cleaned_data['description']
+            
+            # Geocodificar las direcciones para obtener las coordenadas
+            start_coords = GEOUTILS.geocode_address(start_address)
+            end_coords = GEOUTILS.geocode_address(end_address)
+            
+            # Guardar la ruta en la base de datos
+            route = Route(owner=request.user, start=start_address, end=end_address,
+                          start_coords=start_coords, end_coords=end_coords,
+                          description=description)
+            
+            route.save()
+            
+            return redirect('heatmap')
+    else:
+        form = RouteForm()
+    return render(request, 'crear_ruta.html', {'form': form})
+
+
+def heatmap(request):
+    """
+    Renderiza la página de mapa de calor con las rutas de los usuarios.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+    
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza la página de mapa de calor.
+    """
+    # Obtener las rutas del usuario autenticado
+    user_routes = Route.objects.filter(owner=request.user)
+    
+    # Crear un mapa de calor con las rutas del usuario
+    m = GEOUTILS.heatmap(user_routes)
+    
+    return render(request, 'heatmap.html', {'map_html': m._repr_html_()})
+
+
+def clustermap(request):
+    """
+    Renderiza la página de los centroides de las rutas de los usuarios.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza la página de centroides.
+    """
+    # Obtener el número de clusters especificado por el usuario
+    num_clusters = int(request.GET.get('num_clusters', 5))
+    
+    # Obtener las rutas del usuario autenticado
+    user_routes = Route.objects.filter(owner=request.user)
+    
+    # Verificar que el número de clusters sea menor o igual al número de rutas
+    if num_clusters > user_routes.count():
+        num_clusters = user_routes.count()
+        
+    # Crear el objeto mapa con los centroides de las rutas del usuario
+    map_html = GEOUTILS.clustermap(user_routes, num_clusters)._repr_html_()
+    
+    # Renderizar la página de centroides
+    return render(request, 'clustermap.html', {'map_html': map_html})
+    
+    
+def analyze_vehicles(request):
+    """
+    Crea gráficas de análisis de vehículos del usuario.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+    
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza la página de análisis de
+        vehículos.
+    """
+    # Obtener los vehículos del usuario autenticado
+    user_vehicles = Vehicle.objects.filter(owner=request.user)
+    
+    # Generar las gráficas
+    fuel_efficiency_bar_chart = DRAWER.fuel_efficiency_bar_chart(
+        user_vehicles)
+    vehicles_by_brand_pie_chart = DRAWER.vehicles_by_brand_pie_chart(
+        user_vehicles)
+    fuel_efficiency_distribution = DRAWER.fuel_efficiency_distribution(
+        user_vehicles)
+    
+    # Convertir las gráficas a formato HTML
+    fuel_efficiency_bar_chart_html = fuel_efficiency_bar_chart._repr_html_()
+    vehicles_by_brand_pie_chart_html = vehicles_by_brand_pie_chart._repr_html_()
+    fuel_efficiency_distribution_html = fuel_efficiency_distribution._repr_html_()
+    
+    # Renderizar la vista con las gráficas
+    return render(request, 'analyze_vehicles.html', {
+        'fuel_efficiency_bar_chart_html': fuel_efficiency_bar_chart_html,
+        'vehicles_by_brand_pie_chart_html': vehicles_by_brand_pie_chart_html,
+        'fuel_efficiency_distribution_html': fuel_efficiency_distribution_html
+    })
+        

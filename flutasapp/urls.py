@@ -41,6 +41,11 @@ urlpatterns = [
     path('compare/analyze/', views.analyze_selected_vehicles, name='analyze_selected_vehicles'),
     path('update_selected_vehicles/', views.update_selected_vehicles, name='update_selected_vehicles'),
     path('calculate_fuel_cost/', views.calculate_fuel_cost, name='calculate_fuel_cost'),
+    path('crear-vehiculo/', views.create_vehicle, name='crear_vehiculo'),
+    path('crear-ruta/', views.create_route, name='crear_ruta'),
+    path('heatmap/', views.heatmap, name='heatmap'),
+    path('clustermap/', views.clustermap, name='clustermap'),
+    path('analyze-vehicles/', views.analyze_vehicles, name='analyze_vehicles'),
 ]
 
 if settings.DEBUG:

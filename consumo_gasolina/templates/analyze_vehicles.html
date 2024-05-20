@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Analyze Vehicles{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Análisis de Vehículos</title>
+</head>
+<body>
+    <h1>Análisis de Vehículos</h1>
+    
+    <h2>Rendimiento de Combustible por Marca</h2>
+    <!-- Aquí se mostrará el gráfico de barras de rendimiento de combustible por marca -->
+    {{ fuel_efficiency_bar_chart_html | safe }}
+
+    <h2>Porcentaje de Vehículos por Marca</h2>
+    <!-- Aquí se mostrará el gráfico circular del porcentaje de vehículos por marca -->
+    {{ vehicles_by_brand_pie_chart_html | safe }}
+
+    <h2>Distribución de Rendimiento de Combustible</h2>
+    <!-- Aquí se mostrará el gráfico de barras de la distribución de rendimiento de combustible -->
+    {{ fuel_efficiency_distribution_html | safe }}
+
+    <!-- Agregar más contenido HTML  -->
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa de Clusters</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        #map-container {
+            height: 600px; /* Ajusta la altura según tus preferencias */
+        }
+    </style>
+</head>
+<body>
+    <h1>Mapa de Clusters</h1>
+    
+    <!-- Formulario para seleccionar el número de clusters -->
+    <form method="GET">
+        <label for="num_clusters">Número de Clusters:</label>
+        <input type="number" id="num_clusters" name="num_clusters" min="1" value="{{ num_clusters }}">
+        <button type="submit">Actualizar</button>
+    </form>
+    
+    <div id="map-container">
+        <!-- Aquí se renderizará el mapa -->
+        {{ map_html | safe }}
+    </div>
+</body>
+</html>
+{% endblock %}
