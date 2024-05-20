@@ -1,6 +1,6 @@
 # Flutas 🍇: Gestor de Flotas y Rutas Vehículares
 
-[App Flutas]([https://ppidaipalominos.streamlit.app/](https://flutas-3445099c748b.herokuapp.com/))
+[App Flutas](https://flutas.fly.dev)
 
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/w/spalominor/ppi_dai_PALOMINOs?style=flat&color=green">
 
