@@ -10,10 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+import dj_database_url
+import dotenv
 from pathlib import Path
 from django.contrib.messages import constants as message_constants
 
-
+# Load environment variables from .env file
+dotenv.load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,16 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-e)&mu-o*g@$$42*90xdn+&4n!jkq!(n^mm#%og^epxfrp5p^y^'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = False
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", default=False)
 
 # HOST ALLOWED para el despliegue en fly.io
-APP_NAME = os.environ.get("FLY_APP_NAME")
-#ALLOWED_HOSTS = [f"{APP_NAME}.fly.dev"] 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'flutas.fly.dev']
+
+CSRF_TRUSTED_ORIGINS = ['https://flutas.fly.dev']
 
 # Application definition
 
@@ -90,10 +93,7 @@ WSGI_APPLICATION = 'flutasapp.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default='sqlite:///' + os.path.join('db.sqlite3'))
 }
 
 
