@@ -404,7 +404,27 @@ class FuelCostForm(forms.Form):
 class VehicleForm(forms.ModelForm):
     """
     Formulario para la creación de vehículos.
+    
+    Clase Padre:
+        forms.ModelForm: Clase base de formularios de Django.
+        
+    Fields:
+        fuel_type (ChoiceField): Campo para el tipo de combustible.
+    
+    Atributos:
+        fuel_type (ChoiceField): Campo para el tipo de combustible.
+        
+    Métodos:
+        Meta: Clase que contiene metadatos para el formulario.
     """
+    FUEL_CHOICES = [
+        ('gasolina', 'Gasolina'),
+        ('diesel', 'Diesel')
+    ]
+    
+    # Asignar los campos del formulario
+    fuel_type = forms.ChoiceField(choices=FUEL_CHOICES)
+    
     class Meta:
         model = Vehicle
         fields = ['brand', 

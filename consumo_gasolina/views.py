@@ -1,17 +1,16 @@
 # Importa los módulos para el funcionamiento de las vistas de Django
+import base64
 import json
+from datetime import timezone
+from io import BytesIO
+
 from django.contrib import messages
-from django.contrib.auth import (
-    authenticate, 
-    login, 
-    logout, 
-    update_session_auth_hash
-)
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 # Importa los modelos y formularios personalizados
 from consumo_gasolina.models import Route, Vehicle
@@ -51,6 +50,8 @@ GEOUTILS = GeoUtils()
 # Crear una instancia de Drawer para dibujar gráficas
 DRAWER = Drawer()
 
+
+
 # Create your views here.
 def search(request):
     """
@@ -83,7 +84,6 @@ def search(request):
 
 
 
-
 def signup(request):
     """
     Función que permite a un usuario registrarse en el sistema.
@@ -112,7 +112,6 @@ def signup(request):
 
     # Si el formulario no es válido, los errores se agregarán al formulario
     return render(request, "signup.html", {"form": form})
-
 
 def singin(request):
     """
@@ -147,7 +146,6 @@ def singin(request):
         form = LoginForm(request)
     return render(request, "signin.html", {"form": form})
 
-
 def signout(request):
     """
     Función que permite a un usuario cerrar sesión en el sistema.
@@ -161,7 +159,6 @@ def signout(request):
     logout(request)
     messages.success(request, "Cierre de sesión exitoso.")
     return redirect("home")
-
 
 def password_reset_request(request):
     """
@@ -206,7 +203,6 @@ def password_reset_request(request):
         form = PasswordResetRequestForm()
     return render(request, "password_reset_form.html", {"form": form})
 
-
 def password_reseted(request):
     """
     Vista que se muestra después de enviar un correo electrónico de
@@ -221,8 +217,8 @@ def password_reseted(request):
     """
     return render(request, "password_reset_done.html")
 
-
 @login_required
+
 def change_password(request):
     """
     Vista para manejar el cambio de contraseña del usuario autenticado.
@@ -251,7 +247,6 @@ def change_password(request):
         # Enviar el formulario de cambio de contraseña a la vista
         form = ChangePasswordForm(user=request.user)
     return render(request, "change_password.html", {"form": form})
-
 
 def changed_password(request):
     """
@@ -282,7 +277,6 @@ def my_account(request):
     user = request.user
     return render(request, "my_account.html", {"user": user})
 
-
 def search_vehicles(request):
     """
     Vista que maneja las solicitudes de búsqueda de vehículos para mostrarlas
@@ -306,7 +300,6 @@ def search_vehicles(request):
         # Manejar el caso en que la solicitud no sea POST
         return JsonResponse({'error': 'Método de solicitud no permitido'}, status=405)
 
-
 def compare_vehicles(request):
     """
     Vista para la página de comparación de vehículos.
@@ -325,7 +318,6 @@ def compare_vehicles(request):
     else:
         form = VehicleSearchForm(prefix='form')
         return render(request, 'compare.html', {'form': form})
-
 
 def get_selected_vehicles(request):
     """
@@ -351,7 +343,6 @@ def get_selected_vehicles(request):
         # Redirige directamente a la página de análisis
         return JsonResponse({'success': True})
     
-
 def update_selected_vehicles(request):
     """
     Función que actualiza los vehículos seleccionados por el usuario 
@@ -368,7 +359,6 @@ def update_selected_vehicles(request):
         request.session['selected_vehicles'] = selected_vehicles
         return JsonResponse({'success': True})
     return JsonResponse({'error': 'Método de solicitud no permitido'}, status=405)
-
 
 def analyze_selected_vehicles(request):
     """
@@ -408,7 +398,6 @@ def analyze_selected_vehicles(request):
                        'analysis_vehicles': analysis,
                         'columns_with_percentage': columns_with_percentage})
         
-
 def calculate_fuel_cost(request):
     """
     Función que renderiza la página que calcula el costo de combustible 
@@ -446,7 +435,6 @@ def calculate_fuel_cost(request):
         # Renderizar la página con el formulario
         return render(request, 'fuel_cost.html', {'form': form}) 
     
-
 def data_policy(request):
     """
     Función que renderiza la página de la política de tratamiento 
@@ -477,6 +465,7 @@ def data_policy_en(request):
     return render(request, 'data_policy_en.html')
 
 
+@login_required
 def create_vehicle(request):
     """
     Vista para crear un nuevo vehículo.
@@ -491,13 +480,175 @@ def create_vehicle(request):
     if request.method == 'POST':
         form = VehicleForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('analyze_vehicles')  # Redirigir a una página de éxito
+            owner = request.user
+            brand = form.cleaned_data['brand']
+            sub_brand = form.cleaned_data['sub_brand']
+            model_year = form.cleaned_data['model_year']
+            version = form.cleaned_data['version']
+            fuel_efficiency = form.cleaned_data['fuel_efficiency']
+            fuel_type = form.cleaned_data['fuel_type']
+            license_plate = form.cleaned_data['license_plate']
+            
+            vehicle = Vehicle(owner=owner, brand=brand, sub_brand=sub_brand,
+                              model_year=model_year, version=version,
+                              fuel_efficiency=fuel_efficiency, 
+                              fuel_type=fuel_type,
+                              license_plate=license_plate)
+            
+            vehicle.save()
+            
+            # Redirigir a una página de éxito
+            return redirect('analyze_vehicles')  
     else:
         form = VehicleForm()
-    return render(request, 'crear_vehiculo.html', {'form': form})
+    return render(request, 'create_vehicle.html', {'form': form})
+      
+
+@login_required
+def view_vehicles(request):
+    """
+    Vista para mostrar los vehículos del usuario autenticado.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza la página de los vehículos
+        del usuario.
+    """
+    # Obtener los vehículos del usuario autenticado y renderizar la página
+    user_vehicles = Vehicle.objects.filter(owner=request.user)
+    return render(request, 'view_vehicles.html', 
+                  {'user_vehicles': user_vehicles})
+    
+
+@login_required 
+def edit_vehicle(request, vehicle_id):
+    """
+    Renderiza el formulario de edición de un vehículo.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        vehicle_id (int): ID del vehículo a editar.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza el formulario de edición
+        de un vehículo.
+    """
+    # Obtener el vehículo a editar
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id)
+    
+    # Verificar si la solicitud es POST para procesar el formulario
+    if request.method == 'POST':
+        form = VehicleForm(request.POST, instance=vehicle)
+        if form.is_valid():
+            # Guardar los cambios en la base de datos
+            form.save()
+            
+            # Redirigir a la página de visualización de vehículos
+            return redirect('view_vehicles')
+    else:
+        # Renderizar el formulario con los datos del vehículo
+        form = VehicleForm(instance=vehicle)
+    return render(request, 'edit_vehicle.html', {'form': form})
 
 
+@login_required
+def delete_vehicle(request, vehicle_id):
+    """
+    Elimina un vehículo de la base de datos.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        vehicle_id (int): ID del vehículo a eliminar.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que redirige al usuario a la página de
+        visualización de vehículos.
+    """
+    # Obtener el vehículo a eliminar
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id)
+    
+    # Verificar si la solicitud es POST
+    if request.method == 'POST':
+        vehicle.delete()
+        return redirect('view_vehicles')
+    return render(request, 'delete_vehicle.html', {'vehicle': vehicle})
+
+
+@login_required
+def analyze_vehicles(request):
+    """
+    Crea gráficas de análisis de vehículos del usuario.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+    
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza la página de análisis de
+        vehículos.
+    """
+   # Obtener los vehículos del usuario autenticado
+    user_vehicles = Vehicle.objects.filter(owner=request.user)
+    
+    # Verificar si el usuario tiene vehículos
+    if not user_vehicles:
+        return render(request, 'analyze_vehicles.html', {
+            'sucessMessage': '',
+            'errorMessage': 'No tienes vehículos registrados.',
+            'user_vehicles': user_vehicles,
+        })
+    
+    # Generar las gráficas
+    fuel_efficiency_bar_chart = DRAWER.fuel_efficiency_bar_chart(
+        user_vehicles)
+    vehicles_by_brand_pie_chart = DRAWER.vehicles_by_brand_pie_chart(
+        user_vehicles)
+    fuel_efficiency_distribution = DRAWER.fuel_efficiency_distribution(
+        user_vehicles)
+    
+    # Convertir las gráficas a formato de imagen y base64
+    fuel_efficiency_bar_chart_image = BytesIO()
+    fuel_efficiency_bar_chart.savefig(
+        fuel_efficiency_bar_chart_image, format='png')
+    fuel_efficiency_bar_chart_image.seek(0)
+    fuel_efficiency_bar_chart_base64 = base64.b64encode(
+        fuel_efficiency_bar_chart_image.read()).decode('utf-8')
+    
+    vehicles_by_brand_pie_chart_image = BytesIO()
+    vehicles_by_brand_pie_chart.savefig(
+        vehicles_by_brand_pie_chart_image, format='png')
+    vehicles_by_brand_pie_chart_image.seek(0)
+    vehicles_by_brand_pie_chart_base64 = base64.b64encode(
+        vehicles_by_brand_pie_chart_image.read()).decode('utf-8')
+    
+    fuel_efficiency_distribution_image = BytesIO()
+    fuel_efficiency_distribution.savefig(
+        fuel_efficiency_distribution_image, format='png')
+    fuel_efficiency_distribution_image.seek(0)
+    fuel_efficiency_distribution_base64 = base64.b64encode(
+        fuel_efficiency_distribution_image.read()).decode('utf-8')
+    
+    # Imprimir los datos base64 para verificar
+    print("Fuel Efficiency Bar Chart Base64:", 
+          fuel_efficiency_bar_chart_base64)
+    print("Vehicles by Brand Pie Chart Base64:", 
+          vehicles_by_brand_pie_chart_base64)
+    print("Fuel Efficiency Distribution Base64:", 
+          fuel_efficiency_distribution_base64)
+    
+    # Renderizar la vista con las gráficas
+    return render(request, 'analyze_vehicles.html', {
+        'fuel_efficiency_bar_chart': fuel_efficiency_bar_chart_base64,
+        'vehicles_by_brand_pie_chart': vehicles_by_brand_pie_chart_base64,
+        'fuel_efficiency_distribution': fuel_efficiency_distribution_base64,
+        'user_vehicles': user_vehicles,
+        'sucessMessage': 'Gráficas generadas con éxito.',
+        'errorMessage': '',
+    })
+
+
+@login_required
 def create_route(request):
     """
     Vista para crear una nueva ruta.
@@ -522,18 +673,113 @@ def create_route(request):
             end_coords = GEOUTILS.geocode_address(end_address)
             
             # Guardar la ruta en la base de datos
-            route = Route(owner=request.user, start=start_address, end=end_address,
-                          start_coords=start_coords, end_coords=end_coords,
+            route = Route(owner=request.user, 
+                          start=start_address, 
+                          end=end_address,
+                          start_coords=start_coords, 
+                          end_coords=end_coords,
                           description=description)
-            
             route.save()
             
             return redirect('heatmap')
     else:
         form = RouteForm()
-    return render(request, 'crear_ruta.html', {'form': form})
+    return render(request, 'create_route.html', {'form': form})
 
 
+@login_required
+def view_routes(request):
+    """
+    Vista para mostrar las rutas del usuario autenticado.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza la página de las rutas
+        del usuario.
+    """
+    # Obtener las rutas del usuario autenticado
+    user_routes = Route.objects.filter(owner=request.user)
+    
+    # Renderizar la página con las rutas del usuario
+    return render(request, 'view_routes.html', {'user_routes': user_routes})
+
+
+def edit_route(request, route_id):
+    """
+    Renderiza el formulario de edición de una ruta.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        route_id (int): ID de la ruta a editar.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que renderiza el formulario de edición
+        de una ruta.
+    """
+    # Obtener las rutas del usuario autenticado
+    route = get_object_or_404(Route, id=route_id)
+    
+    # Verificar si la solicitud es POST para procesar el formulario
+    if request.method == 'POST':
+        form = RouteForm(request.POST, instance=route)
+        if form.is_valid():
+            # Guardar los cambios en la base de datos y redirigir
+            form.save()
+            return redirect('view_routes')
+    else:
+        # Renderizar el formulario con los datos de la ruta
+        form = RouteForm(instance=route)
+    return render(request, 'edit_route.html', {'form': form})
+
+
+def delete_route(request, route_id):
+    """
+    Elimina una ruta de la base de datos.
+    
+    Args:
+        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
+        route_id (int): ID de la ruta a eliminar.
+        
+    Returns:
+        HttpResponse: Respuesta HTTP que redirige al usuario a la página de
+        visualización de rutas.
+    """
+    # Obtener la ruta a eliminar
+    route = get_object_or_404(Route, id=route_id)
+    
+    # Verificar si la solicitud es POST
+    if request.method == 'POST':
+        # Eliminar la ruta de la base de datos
+        route.delete()
+        return redirect('view_routes')
+    return render(request, 'delete_route.html', {'route': route})
+
+
+def complete_route(request, route_id):
+    """
+    Completa una ruta y marca la fecha de completado.
+    
+    Args:
+        request (HttpRequest): La solicitud HTTP.
+        route_id (int): El ID de la ruta a completar.
+        
+    Returns:
+        HttpResponseRedirect: Redirige a la vista de rutas.
+    """
+    # Obtener la ruta a completar
+    route = get_object_or_404(Route, id=route_id, owner=request.user)
+    
+    # Marcar la fecha de completado
+    route.date_completed = timezone.now()
+    route.save()
+    
+    # Redirigir a la vista de rutas
+    return redirect('view_routes')
+
+
+@login_required
 def heatmap(request):
     """
     Renderiza la página de mapa de calor con las rutas de los usuarios.
@@ -547,12 +793,24 @@ def heatmap(request):
     # Obtener las rutas del usuario autenticado
     user_routes = Route.objects.filter(owner=request.user)
     
-    # Crear un mapa de calor con las rutas del usuario
-    m = GEOUTILS.heatmap(user_routes)
+    # Verificar si el usuario tiene rutas
+    if not user_routes:
+        return render(request, 'heatmap.html', {
+            'sucessMessage': '',
+            'errorMessage': 'No tienes rutas registradas.',
+            'map_html': ''
+        })
     
-    return render(request, 'heatmap.html', {'map_html': m._repr_html_()})
+    # Crear un mapa de calor con las rutas del usuario
+    map = GEOUTILS.heatmap(user_routes)
+    
+    return render(request, 'heatmap.html', 
+                  {'map_html': map._repr_html_(),
+                   'sucessMessage': 'Mapa de calor generado con éxito.',
+                    'errorMessage': '',})
 
 
+@login_required
 def clustermap(request):
     """
     Renderiza la página de los centroides de las rutas de los usuarios.
@@ -563,11 +821,19 @@ def clustermap(request):
     Returns:
         HttpResponse: Respuesta HTTP que renderiza la página de centroides.
     """
-    # Obtener el número de clusters especificado por el usuario
-    num_clusters = int(request.GET.get('num_clusters', 5))
-    
     # Obtener las rutas del usuario autenticado
     user_routes = Route.objects.filter(owner=request.user)
+    
+    # Verificar si el usuario tiene rutas
+    if not user_routes:
+        return render(request, 'clustermap.html', {
+            'sucessMessage': '',
+            'errorMessage': 'No tienes rutas registradas.',
+            'map_html': ''
+        })
+    
+    # Obtener el número de clusters especificado por el usuario
+    num_clusters = int(request.GET.get('num_clusters', 1))
     
     # Verificar que el número de clusters sea menor o igual al número de rutas
     if num_clusters > user_routes.count():
@@ -577,40 +843,7 @@ def clustermap(request):
     map_html = GEOUTILS.clustermap(user_routes, num_clusters)._repr_html_()
     
     # Renderizar la página de centroides
-    return render(request, 'clustermap.html', {'map_html': map_html})
-    
-    
-def analyze_vehicles(request):
-    """
-    Crea gráficas de análisis de vehículos del usuario.
-    
-    Args:
-        request (HttpRequest): Solicitud HTTP que se recibe desde el cliente.
-    
-    Returns:
-        HttpResponse: Respuesta HTTP que renderiza la página de análisis de
-        vehículos.
-    """
-    # Obtener los vehículos del usuario autenticado
-    user_vehicles = Vehicle.objects.filter(owner=request.user)
-    
-    # Generar las gráficas
-    fuel_efficiency_bar_chart = DRAWER.fuel_efficiency_bar_chart(
-        user_vehicles)
-    vehicles_by_brand_pie_chart = DRAWER.vehicles_by_brand_pie_chart(
-        user_vehicles)
-    fuel_efficiency_distribution = DRAWER.fuel_efficiency_distribution(
-        user_vehicles)
-    
-    # Convertir las gráficas a formato HTML
-    fuel_efficiency_bar_chart_html = fuel_efficiency_bar_chart._repr_html_()
-    vehicles_by_brand_pie_chart_html = vehicles_by_brand_pie_chart._repr_html_()
-    fuel_efficiency_distribution_html = fuel_efficiency_distribution._repr_html_()
-    
-    # Renderizar la vista con las gráficas
-    return render(request, 'analyze_vehicles.html', {
-        'fuel_efficiency_bar_chart_html': fuel_efficiency_bar_chart_html,
-        'vehicles_by_brand_pie_chart_html': vehicles_by_brand_pie_chart_html,
-        'fuel_efficiency_distribution_html': fuel_efficiency_distribution_html
-    })
-        
+    return render(request, 'clustermap.html', 
+                  {'map_html': map_html,
+                    'sucessMessage': f'{num_clusters} Centroides generados',
+                    'errorMessage': ''})

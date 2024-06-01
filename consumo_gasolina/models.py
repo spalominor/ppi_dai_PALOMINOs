@@ -24,11 +24,11 @@ class Vehicle(models.Model):
     model_year = models.PositiveIntegerField()
     version = models.CharField(max_length=100)
     fuel_efficiency = models.FloatField()
-    fuel_type = models.CharField(max_length=50)
+    fuel_type = models.CharField(max_length=8)
     license_plate = models.CharField(max_length=20)
 
     def __str__(self):
-        return f"{self.brand} {self.sub_brand} {self.version} ({self.model_year})"
+        return f"brand:{self.brand} sub_brand:{self.sub_brand} version:{self.version} model_year:({self.model_year}) fuel_efficiency:{self.fuel_efficiency} fuel_type:{self.fuel_type} license_plate:{self.license_plate}"
     
     
 class Route(models.Model):
@@ -55,4 +55,4 @@ class Route(models.Model):
     date_completed = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.start} - {self.end} ({self.date_created})"
+        return f"start:{self.start} - end:{self.end} date_c({self.date_created}) date_f({self.date_completed}) start_coords:{self.start_coords} end_coords:{self.end_coords}"

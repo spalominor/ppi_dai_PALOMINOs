@@ -41,11 +41,18 @@ urlpatterns = [
     path('compare/analyze/', views.analyze_selected_vehicles, name='analyze_selected_vehicles'),
     path('update_selected_vehicles/', views.update_selected_vehicles, name='update_selected_vehicles'),
     path('calculate_fuel_cost/', views.calculate_fuel_cost, name='calculate_fuel_cost'),
-    path('crear-vehiculo/', views.create_vehicle, name='crear_vehiculo'),
-    path('crear-ruta/', views.create_route, name='crear_ruta'),
+    path('create_vehicle/', views.create_vehicle, name='create_vehicle'),
+    path('create_route/', views.create_route, name='create_route'),
     path('heatmap/', views.heatmap, name='heatmap'),
     path('clustermap/', views.clustermap, name='clustermap'),
     path('analyze-vehicles/', views.analyze_vehicles, name='analyze_vehicles'),
+    path('vehicles/', views.view_vehicles, name='view_vehicles'),
+    path('vehicles/<int:vehicle_id>/edit/', views.edit_vehicle, name='edit_vehicle'),
+    path('vehicles/<int:vehicle_id>/delete/', views.delete_vehicle, name='delete_vehicle'),
+    path('routes/', views.view_routes, name='view_routes'), 
+    path('routes/<int:route_id>/edit/', views.edit_route, name='edit_route'), 
+    path('routes/<int:route_id>/delete/', views.delete_route, name='delete_route'),
+    path('routes/<int:route_id>/complete/', views.complete_route, name='complete_route'),
 ]
 
 if settings.DEBUG:

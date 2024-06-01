@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}
+Mis Vehículos
+{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-3">
+    <!-- Barra lateral -->
+    <div class="sidebar">
+      <h2>Menú</h2>
+      <ul>
+        <li><a href="{% url 'create_vehicle' %}">Agregar Nuevo Vehículo</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <h1>Mis Vehículos</h1>
+    {% if user_vehicles %}
+      <ul>
+        {% for vehicle in user_vehicles %}
+        <li>
+          <!-- Información del vehículo -->
+          <h2>{{vehicle.brand}} {{vehicle.sub_brand}} - {{ vehicle.license_plate }}</h2>
+          <p>Modelo: {{ vehicle.model_year }}</p>
+          <p>Versión: {{ vehicle.version }}</p>
+          <p>Rendimiento: {{ vehicle.fuel_efficiency }} km/L de {{ vehicle.fuel_type }}</p>
+          <!-- Botón de editar -->
+          <a href="{% url 'edit_vehicle' vehicle.id %}">Editar</a>
+          <!-- Botón de eliminar -->
+          <form action="{% url 'delete_vehicle' vehicle.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar este vehículo?')">Eliminar</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No tienes vehículos registrados.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

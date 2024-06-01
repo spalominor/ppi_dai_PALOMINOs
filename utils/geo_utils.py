@@ -1,6 +1,7 @@
 import folium
 import geopandas as gpd
 import numpy as np
+from folium.plugins import MarkerCluster
 from scipy.cluster.vq import kmeans, vq
 from folium.plugins import HeatMap
 
@@ -42,22 +43,28 @@ class GeoUtils:
         Returns:
             Un objeto de tipo folium.Map con el mapa de calor.
         """
-        # Extraer las coordenadas de inicio de las rutas del usuario
-        coords = [(route.start_coords.y, route.start_coords.x) for route in user_routes]
+        coords = []
         
-        # Calcular el centro del mapa y el nivel de zoom
-        center_lat = sum(lat for lat, lon in coords) / len(coords)
-        center_lon = sum(lon for lat, lon in coords) / len(coords)
-        zoom = 10  # Nivel de zoom inicial
+        # Iterar sobre las rutas del usuario y extraer las coordenadas de inicio y fin
+        for route in user_routes:
+            start_coords = route.start_coords.split()
+            end_coords = route.end_coords.split()
+            coords.append((float(start_coords[1]), float(start_coords[0])))
+            coords.append((float(end_coords[1]), float(end_coords[0])))
+            
         
-        # Crear un GeoDataFrame con las coordenadas
-        gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(*zip(*coords)))
-        
-        # Crear un mapa de Folium centrado en el centro calculado
-        m = folium.Map(location=[center_lat, center_lon], zoom_start=zoom)
-        
-        # Añadir una capa de mapa de calor
-        HeatMap(data=gdf.geometry, radius=15).add_to(m)
+        # Crear un GeoDataFrame a partir de las coordenadas
+        gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(
+            [coord[1] for coord in coords], 
+            [coord[0] for coord in coords]
+        ))
+
+        # Centrar el mapa en el medio de todas las rutas
+        centroid = gdf.unary_union.centroid
+        m = folium.Map(location=[centroid.y, centroid.x], zoom_start=10)
+
+        # Agregar el mapa de calor
+        HeatMap(data=[[point.y, point.x] for point in gdf.geometry], radius=15).add_to(m)
         
         return m
     
@@ -72,26 +79,43 @@ class GeoUtils:
         Returns:
             Un objeto de tipo folium.Map con el mapa de calor.
         """
+        # Crear una lista para almacenar las coordenadas
+        coordinates = []
+
+        # Iterar sobre las rutas del usuario y extraer las coordenadas de inicio y fin
+        for route in user_routes:
+            start_coords = route.start_coords.split()
+            end_coords = route.end_coords.split()
+            coordinates.append([float(start_coords[1]), float(start_coords[0])])
+            coordinates.append([float(end_coords[1]), float(end_coords[0])])
+
+        # Convertir las coordenadas a un GeoDataFrame
+        gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(
+            [coord[1] for coord in coordinates], 
+            [coord[0] for coord in coordinates]
+        ))
+
+        # Aplicar KMeans de SciPy para encontrar clústeres
+        num_clusters = num_clusters
+        centroids, _ = kmeans([point.coords[0] for point in gdf.geometry], num_clusters)
         
-        # Extraer las coordenadas de inicio de las rutas del usuario
-        coords = [(route.start_coords.y, 
-                   route.start_coords.x) for route in user_routes]
-        
-        # Convertir las coordenadas a un array NumPy
-        data = np.array(coords)
-        
-        # Calcular el centroide de todas las coordenadas
-        center_lat = np.mean(data[:, 0])
-        center_lon = np.mean(data[:, 1])
-        
-        # Aplicar el algoritmo de clustering K-Means
-        # Número de clusters
-        k = num_clusters  
-        centroids, _ = kmeans(data, k)
-        
-        # Crear un mapa de Folium centrado en el centroide de las coordenadas
-        m = folium.Map(location=[center_lat, center_lon], zoom_start=10)
-        
-        # Añadir marcadores en los centroides de los clusters
+        # Centrar el mapa en el medio de todas las rutas
+        map_center = gdf.unary_union.centroid
+        m = folium.Map(location=[map_center.y, map_center.x], zoom_start=10)
+
+        # Añadir los centroides al mapa
         for centroid in centroids:
-            folium.Marker(location=[centroid[0], centroid[1]]).add_to(m)
+            folium.Marker(
+                location=[centroid[1], centroid[0]], 
+                popup="Centroide de clúster",
+                icon=folium.Icon(color='red', icon='info-sign')
+            ).add_to(m)
+
+        # Crear un objeto de MarkerCluster
+        marker_cluster = MarkerCluster().add_to(m)
+
+        # Añadir los puntos al clúster
+        for coord in coordinates:
+            folium.Marker(location=coord).add_to(marker_cluster)
+            
+        return m

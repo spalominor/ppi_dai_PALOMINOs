@@ -1,31 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" class="bg-gray-100 text-gray-900">
 <head>
-    {% load static %}  <!-- Cargar la etiqueta static al inicio del archivo -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flutas</title>
-    <link rel="icon" href="{% static '/favicon.ico' %}" type="image/x-icon">
+    <title>{% block title %}Flutas App{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
 </head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Inicio</a></li>
-                <li><a href="{% url 'compare_vehicles' %}">Comparar</a></li>
-                <li><a href="{% url 'calculate_fuel_cost' %}">Costo de ruta</a></li>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+    <header class="fixed top-0 z-10 flex items-center justify-between w-full px-4 py-2 bg-primary text-white dark:bg-gray-800">
+        <nav class="flex items-center space-x-4 hover:scale-110">
+            <a href="{% url 'home' %}" class="text-lg font-semibold hover:text-secondary-100 transition">Flutas</a>
+                <a href="{% url 'home' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Inicio</a>
+                <a href="{% url 'compare_vehicles' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Comparar Vehículos</a>
+                <a href="{% url 'calculate_fuel_cost' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Costo de Ruta</a>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'my_account' %}">Mi cuenta</a></li>
+                    <a href="{% url 'view_vehicles' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Ver Vehículos</a>
+                    <a href="{% url 'view_routes' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Ver Rutas</a>
+                    <a href="{% url 'analyze_vehicles' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Analizar Vehículos</a>
+                    <a href="{% url 'clustermap' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Mapa de Clúster de Rutas</a>
+                    <a href="{% url 'heatmap' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Mapa de Calor de Rutas</a>
+                    <a href="{% url 'my_account' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Mi Cuenta</a>
+                    <a href="{% url 'logout' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Cerrar Sesión</a>
                 {% else %}
-                    <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
-                    <li><a href="{% url 'signup' %}">Registrarse</a></li>
+                    <a href="{% url 'login' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Iniciar Sesión</a>
+                    <a href="{% url 'signup' %}" class="hover:scale-110 hover:text-secondary-100 hover:-translate-y-1 transition">Registrarse</a>
                 {% endif %}
             </ul>
         </nav>
+        <div>
+            <button id="theme-toggle" class="focus:outline-none">
+                <span id="theme-toggle-dark-icon" class="hidden">🌙</span>
+                <span id="theme-toggle-light-icon">☀️</span>
+            </button>
+        </div>
     </header>
-    <main>
+    <main class="container mx-auto p-4 mt-16 bg-white shadow-md rounded-lg dark:bg-gray-800 dark:text-gray-100">
         {% block content %}
         {% endblock %}
     </main>
+    <script>
+        // JavaScript para el cambio de tema
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        // Cambiar el ícono según el tema actual
+        function updateIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            } else {
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            // Alternar la clase 'dark' en el elemento HTML
+            document.documentElement.classList.toggle('dark');
+            updateIcons();
+
+            // Guardar la preferencia del tema en localStorage
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.removeItem('theme');
+            }
+        });
+
+        // Al cargar la página, aplicar el tema guardado
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+        updateIcons();
+    </script>
 </body>
 </html>

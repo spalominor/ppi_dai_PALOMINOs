@@ -1,3 +1,24 @@
+"""
+Módulo que contiene la clase Drawer, la cual contiene diversas funciones
+para dibujar gráficos a partir de datos de los vehículos de los usuarios.
+
+Clase:
+    Drawer
+    
+Metodos:
+    fuel_efficiency_bar_chart(vehicles): Crea un gráfico de barras con el 
+    rendimiento de combustible de los vehículos.
+    
+    vehicles_by_brand_pie_chart(vehicles): Crea un gráfico de pastel con la 
+    distribución de vehículos por marca.
+    
+    fuel_efficiency_distribution(vehicles): Crea un gráfico de barras con la 
+    distribución de rendimiento de combustible de los vehículos.
+    
+Dependencias:
+    - numpy
+    - matplotlib
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -5,9 +26,24 @@ class Drawer:
     """
     Clase que contiene diversas funciones para dibujar gráficos a 
     partir de datos de los vehículos de los usuarios.
+    
+    Atributos:
+        None
+        
+    Métodos:
+        fuel_efficiency_bar_chart(vehicles): Crea un gráfico de barras con el 
+        rendimiento de combustible de los vehículos.
+        
+        vehicles_by_brand_pie_chart(vehicles): Crea un gráfico de pastel con 
+        la distribución de vehículos por marca.
+        
+        fuel_efficiency_distribution(vehicles): Crea un gráfico de barras con 
+        la distribución de rendimiento de combustible de los vehículos.
     """
     def __init__(self):
-        """Constructor de la clase Drawer.
+        """
+        Constructor de la clase Drawer. Se inicializan los atributos.
+        De momento esta como parte de tener buena practica de programación.
         
         Args:
             None
@@ -16,6 +52,7 @@ class Drawer:
             None
         """
         pass
+
 
     def fuel_efficiency_bar_chart(self, vehicles):
         """
@@ -78,7 +115,7 @@ class Drawer:
             Un objeto de tipo matplotlib.pyplot con el gráfico de barras.
         """
         fuel_efficiencies = [vehicle.fuel_efficiency for vehicle in vehicles]
-        vehicle_plates = [vehicle.plate for vehicle in vehicles]
+        vehicle_plates = [vehicle.license_plate for vehicle in vehicles]
 
         # Calcular estadísticas
         indice_min = np.argmin(fuel_efficiencies)

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}
+Mis Rutas
+{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-3">
+    <!-- Barra lateral -->
+    <div class="sidebar">
+      <h2>Menú</h2>
+      <ul>
+        <li><a href="{% url 'create_route' %}">Crear Nueva Ruta</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <h1>Mis Rutas</h1>
+    {% if user_routes %}
+      <ul>
+        {% for route in user_routes %}
+        <li>
+          <!-- Información de la ruta -->	
+          <h2>{{ route.start }} - {{ route.end }}</h2>
+          <p>{{ route.date_created }} - {{ route.date_completed }}</p>
+          <p>{{ route.description }}</p>
+          <!-- Botón de editar -->
+          <a href="{% url 'edit_route' route.id %}">Editar</a>
+          <!-- Botón de completar -->
+          <a href="{% url 'complete_route' route.id %}">Completar</a>
+          <!-- Botón de eliminar -->
+          <form action="{% url 'delete_route' route.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta ruta?')">Eliminar</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No tienes rutas creadas</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

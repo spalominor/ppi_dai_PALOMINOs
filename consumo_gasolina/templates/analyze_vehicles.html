@@ -4,27 +4,36 @@
 
 {% block content %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Análisis de Vehículos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de vehículos</title>
 </head>
 <body>
-    <h1>Análisis de Vehículos</h1>
-    
-    <h2>Rendimiento de Combustible por Marca</h2>
-    <!-- Aquí se mostrará el gráfico de barras de rendimiento de combustible por marca -->
-    {{ fuel_efficiency_bar_chart_html | safe }}
+    <h2>Análisis de vehículos</h2>
+    {% if sucessMessage %}
+        <p>{{ sucessMessage }}</p>
+        <div>
+            <h3>Gráfico de eficiencia de combustible</h3>
+            <img src="data:image/png;base64,{{ fuel_efficiency_bar_chart }}" alt="Gráfico de eficiencia de combustible">
+        </div>
 
-    <h2>Porcentaje de Vehículos por Marca</h2>
-    <!-- Aquí se mostrará el gráfico circular del porcentaje de vehículos por marca -->
-    {{ vehicles_by_brand_pie_chart_html | safe }}
+        <div>
+            <h3>Gráfico de vehículos por marca</h3>
+            <img src="data:image/png;base64,{{ vehicles_by_brand_pie_chart }}" alt="Gráfico de vehículos por marca">
+        </div>
 
-    <h2>Distribución de Rendimiento de Combustible</h2>
-    <!-- Aquí se mostrará el gráfico de barras de la distribución de rendimiento de combustible -->
-    {{ fuel_efficiency_distribution_html | safe }}
-
-    <!-- Agregar más contenido HTML  -->
+        <div>
+            <h3>Distribución de eficiencia de combustible</h3>
+            <img src="data:image/png;base64,{{ fuel_efficiency_distribution }}" alt="Distribución de eficiencia de combustible">
+        </div>
+    {% else %}
+        <p>{{ errorMessage }}</p>
+        <a href="{% url 'create_vehicle' %}">Crear vehículo</a>
+        <a href="/consumo_gasolina/analyze_vehicles">Volver a intentar</a>
+    {% endif %}
 </body>
 </html>
+
 {% endblock %}
