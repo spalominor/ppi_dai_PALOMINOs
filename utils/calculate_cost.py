@@ -1,3 +1,26 @@
+"""
+Este módulo contiene la clase CostCalculator, que permite calcular el costo
+de combustible para viajar entre dos puntos. La clase cuenta con un método
+para verificar si la consulta es nula, otro para calcular la distancia entre
+dos puntos y un método principal para calcular el costo de combustible.
+
+Clase:
+    CostCalculator
+    
+Funciones:
+    _is_null_query(query): Verifica si la consulta es nula.
+    
+    _calculate_distance(direccion_inicio, direccion_destino): Calcula la 
+    distancia entre dos puntos.
+    
+    calculate(query): Calcula el costo de combustible para viajar una 
+    distancia dada.
+    
+Dependencias:
+    - numpy
+    - geopandas
+    - scipy
+"""
 import numpy as np
 import geopandas as gpd
 from scipy.spatial import distance
@@ -37,7 +60,6 @@ class CostCalculator():
             return True
         else:
             return False
-    
     
     def _calculate_distance(self, direccion_inicio: str, 
                             direccion_destino: str) -> float:
@@ -82,7 +104,6 @@ class CostCalculator():
         
         return dist_km
     
-    
     def calculate(self, query: dict) -> float:
         """
         Calcula el costo de combustible para viajar una distancia dada.
@@ -121,5 +142,4 @@ class CostCalculator():
                     'cost': costo_combustible,
                     'fuel_type': tipo_combustible}
         
-        print(response)
         return response

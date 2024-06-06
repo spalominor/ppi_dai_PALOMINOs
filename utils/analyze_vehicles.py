@@ -1,6 +1,8 @@
 """
 Módulo que permite analizar vehículos en función de los criterios del
-dataframe.
+dataframe. Se analizan vehículos en función de sus características y se
+calculan estimaciones anuales de emisiones de CO2, NOx y consumo de
+combustible.
 
 Clases:
     VehicleAnalyzer: Clase que permite analizar vehículos en función de los 
@@ -143,18 +145,14 @@ class VehicleAnalyzer:
         # Crear un DataFrame temporal con los originales valores máximos
         max_df = pd.concat([discretas_vehicles, valores_vehicles], axis=1)
         
-        print(max_df.shape)
-        print(diferencia_df.shape)
         # Reemplazar los valores 0 por los máximos valores de cada columna
         diferencia_df = diferencia_df.mask(zero_mask, max_df)
-        
         
         # Convertir las columnas a tipo float
         diferencia_df.astype(float)
         
         return pd.concat([informacion_vehicles, diferencia_df], axis=1)
             
-    
     def _anual_estimation(self, vehicles: pd.DataFrame) -> pd.DataFrame:
         """
         Calcula las estimaciones anuales de emisiones de CO2, NOx y consumo
@@ -205,7 +203,6 @@ class VehicleAnalyzer:
         
         return estimaciones_df
         
-        
     def _precio_combustible(self, row: pd.Series) -> float:
         """
         Devuelve el precio del combustible según el tipo.
@@ -223,8 +220,7 @@ class VehicleAnalyzer:
             return self.PRECIO_COMBUSTIBLE['diesel']
         else:
             return 0
-        
-        
+          
     def _clean_data(self, vehicles: pd.DataFrame) -> pd.DataFrame:
         """
         Limpia los datos del DataFrame de vehículos.
@@ -247,7 +243,6 @@ class VehicleAnalyzer:
         
         return vehicles
            
-    
     def analyze(self, selected_vehicles) -> pd.DataFrame:
         """
         Analiza de manera general vehículos en función de sus características.

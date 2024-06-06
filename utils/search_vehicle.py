@@ -8,6 +8,11 @@ Clases:
 
 Funciones:
     No hay funciones en este módulo.
+    
+Dependencias:
+    - pandas
+    - numpy
+    - QueryDict from Django
 """
 from django.http import QueryDict
 import numpy as np
@@ -63,7 +68,6 @@ class VehicleSearcher:
         self.vehicles = pd.read_csv(self.CSV_URL, decimal=',')
         self._prepare_data()
 
-
     def _prepare_data(self):
         """Convierte las columnas del DataFrame a los tipos de datos 
         correctos.
@@ -82,7 +86,6 @@ class VehicleSearcher:
         self.vehicles['marca'] = self.vehicles['marca'].astype(str)
         self.vehicles['submarca'] = self.vehicles['submarca'].astype(str)
         self.vehicles['version'] = self.vehicles['version'].astype(str)
-        
         
     def _null_query(self, query: dict) -> bool:
         """
@@ -108,7 +111,6 @@ class VehicleSearcher:
         else:
             return False
         
-    
     def _querydict_to_dict(self, query: QueryDict) -> dict:
         """
         Convierte un objeto QueryDict en un diccionario.
@@ -136,7 +138,6 @@ class VehicleSearcher:
                 result[key] = query.get(f'form-{key}', ['']) or ''
         
         return result
-
 
     def _calculate_score_vectorized(self, 
                                     vehicles: pd.DataFrame, 
@@ -179,7 +180,6 @@ class VehicleSearcher:
                 self.WEIGHTS.get('model_year', 0), 0)
         return scores
     
-
     def search(self, query: dict) -> pd.DataFrame:
         """
         Busca vehículos en el dataset utilizando los criterios de búsqueda 

@@ -22,6 +22,8 @@ Dependencias:
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+
 class Drawer:
     """
     Clase que contiene diversas funciones para dibujar gráficos a 
@@ -52,7 +54,6 @@ class Drawer:
             None
         """
         pass
-
 
     def fuel_efficiency_bar_chart(self, vehicles):
         """
